@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>2048 小游戏</title>
+	<style>
+		/* --- 全局重置 & 字体 --- */
+		* {
+			box-sizing: border-box;
+			-webkit-tap-highlight-color: transparent;
+			user-select: none;
+		}
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			background: #faf8ef;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-family: 'Arial', 'Helvetica Neue', sans-serif;
+			padding: 16px;
+		}
+
+		/* --- 游戏容器 --- */
+		.game-container {
+			width: 100%;
+			max-width: 500px;
+			background: #faf8ef;
+			border-radius: 24px;
+			padding: 20px 20px 30px;
+			box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+		}
+
+		/* --- 头部 --- */
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.title {
+			font-size: 48px;
+			font-weight: 900;
+			color: #776e65;
+			line-height: 1;
+		}
+
+		.score-box {
+			display: flex;
+			gap: 12px;
+		}
+
+		.score-item {
+			background: #bbada0;
+			color: #fff;
+			padding: 6px 18px;
+			border-radius: 12px;
+			text-align: center;
+			min-width: 70px;
+		}
+
+		.score-item .label {
+			font-size: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			opacity: 0.8;
+			display: block;
+		}
+
+		.score-item .value {
+			font-size: 24px;
+			font-weight: 700;
+			display: block;
+			line-height: 1.3;
+		}
+
+		/* --- 控制按钮行 --- */
+		.controls {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 16px;
+			gap: 12px;
+		}
+
+		.controls .hint {
+			color: #776e65;
+			font-size: 15px;
+			opacity: 0.7;
+		}
+
+		.btn {
+			background: #8f7a66;
+			border: none;
+			color: #f9f6f2;
+			font-size: 16px;
+			font-weight: 700;
+			padding: 10px 24px;
+			border-radius: 12px;
+			cursor: pointer;
+			transition: background 0.15s, transform 0.1s;
+			letter-spacing: 0.3px;
+		}
+
+		.btn:hover {
+			background: #9f8b76;
+		}
+		.btn:active {
+			transform: scale(0.94);
+		}
+
+		/* --- 网格 --- */
+		.grid-wrapper {
+			background: #bbada0;
+			border-radius: 18px;
+			padding: 12px;
+			touch-action: none;
+			/* 防止触摸滚动 */;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 12px;
+			aspect-ratio: 1 / 1;
+			/* 保证正方形 */;
+		}
+
+		/* --- 每个格子 (背景) --- */
+		.cell {
+			background: rgba(238, 228, 218, 0.35);
+			border-radius: 10px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 36px;
+			font-weight: 800;
+			color: #776e65;
+			transition: background 0.12s, transform 0.12s;
+			position: relative;
+			aspect-ratio: 1 / 1;
+			/* 保持正方形 */;
+		}
+
+		/* 数字块样式 - 动态通过 JS 设置背景色，这里只定义文字颜色 */
+		.cell[data-value="2"] {
+			background: #eee4da;
+			color: #776e65;
+		}
+		.cell[data-value="4"] {
+			background: #ede0c8;
+			color: #776e65;
+		}
+		.cell[data-value="8"] {
+			background: #f2b179;
+			color: #f9f6f2;
+		}
+		.cell[data-value="16"] {
+			background: #f59563;
+			color: #f9f6f2;
+		}
+		.cell[data-value="32"] {
+			background: #f67c5f;
+			color: #f9f6f2;
+		}
+		.cell[data-value="64"] {
+			background: #f65e3b;
+			color: #f9f6f2;
+		}
+		.cell[data-value="128"] {
+			background: #edcf72;
+			color: #f9f6f2;
+			font-size: 30px;
+		}
+		.cell[data-value="256"] {
+			background: #edcc61;
+			color: #f9f6f2;
+			font-size: 30px;
+		}
+		.cell[data-value="512"] {
+			background: #edc850;
+			color: #f9f6f2;
+			font-size: 30px;
+		}
+		.cell[data-value="1024"] {
+			background: #edc53f;
+			color: #f9f6f2;
+			font-size: 24px;
+		}
+		.cell[data-value="2048"] {
+			background: #edc22e;
+			color: #f9f6f2;
+			font-size: 24px;
+			box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.4);
+		}
+		.cell[data-value="4096"] {
+			background: #60d992;
+			color: #f9f6f2;
+			font-size: 24px;
+		}
+		.cell[data-value="8192"] {
+			background: #3c9a6e;
+			color: #f9f6f2;
+			font-size: 24px;
+		}
+
+		/* 空单元格占位 */
+		.cell.empty {
+			background: rgba(238, 228, 218, 0.35);
+		}
+
+		/* 出现动画 */
+		.cell.pop {
+			animation: pop 0.18s ease-out;
+		}
+		@keyframes pop {
+			0% {
+				transform: scale(0.6);
+				opacity: 0.6;
+			}
+			100% {
+				transform: scale(1);
+				opacity: 1;
+			}
+		}
+
+		/* 合并动画 */
+		.cell.merge {
+			animation: mergePop 0.2s ease-out;
+		}
+		@keyframes mergePop {
+			0% {
+				transform: scale(1.2);
+			}
+			50% {
+				transform: scale(0.9);
+			}
+			100% {
+				transform: scale(1);
+			}
+		}
+
+		/* --- 游戏结束 / 胜利 遮罩 --- */
+		.overlay {
+			display: none;
+			position: absolute;
+			inset: 0;
+			background: rgba(238, 228, 218, 0.73);
+			border-radius: 18px;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			z-index: 10;
+			backdrop-filter: blur(2px);
+			animation: fadeIn 0.3s ease-out;
+		}
+		.overlay.active {
+			display: flex;
+		}
+
+		@keyframes fadeIn {
+			0% {
+				opacity: 0;
+			}
+			100% {
+				opacity: 1;
+			}
+		}
+
+		.overlay .message {
+			font-size: 42px;
+			font-weight: 900;
+			color: #776e65;
+			margin-bottom: 12px;
+			text-align: center;
+		}
+		.overlay .sub-message {
+			font-size: 18px;
+			color: #776e65;
+			opacity: 0.7;
+			margin-bottom: 24px;
+		}
+		.overlay .btn {
+			font-size: 20px;
+			padding: 12px 40px;
+		}
+
+		/* --- 触摸优化 & 响应式 --- */
+		@media (max-width: 520px) {
+			.game-container {
+				padding: 12px 12px 20px;
+			}
+			.title {
+				font-size: 36px;
+			}
+			.grid-wrapper {
+				padding: 8px;
+			}
+			.grid {
+				gap: 8px;
+			}
+			.cell {
+				font-size: 28px;
+				border-radius: 8px;
+			}
+			.cell[data-value="128"],
+			.cell[data-value="256"],
+			.cell[data-value="512"] {
+				font-size: 24px;
+			}
+			.cell[data-value="1024"],
+			.cell[data-value="2048"],
+			.cell[data-value="4096"],
+			.cell[data-value="8192"] {
+				font-size: 18px;
+			}
+			.score-item {
+				min-width: 56px;
+				padding: 4px 12px;
+			}
+			.score-item .value {
+				font-size: 20px;
+			}
+			.controls .hint {
+				font-size: 13px;
+			}
+			.btn {
+				font-size: 14px;
+				padding: 8px 16px;
+			}
+			.overlay .message {
+				font-size: 30px;
+			}
+		}
+
+		@media (max-width: 400px) {
+			.title {
+				font-size: 28px;
+			}
+			.grid {
+				gap: 6px;
+			}
+			.grid-wrapper {
+				padding: 6px;
+			}
+			.cell {
+				font-size: 22px;
+				border-radius: 6px;
+			}
+			.cell[data-value="128"],
+			.cell[data-value="256"],
+			.cell[data-value="512"] {
+				font-size: 18px;
+			}
+			.cell[data-value="1024"],
+			.cell[data-value="2048"],
+			.cell[data-value="4096"],
+			.cell[data-value="8192"] {
+				font-size: 14px;
+			}
+			.score-item .value {
+				font-size: 17px;
+			}
+		}
+
+		/* 网格容器相对定位，用于 overlay */
+		.grid-wrapper {
+			position: relative;
+		}
+	</style>
+</head>
+<body>
+
+<div class="game-container">
+	<!-- 头部 -->
+	<div class="header">
+		<span class="title">2048</span>
+		<div class="score-box">
+			<div class="score-item">
+				<span class="label">分数</span>
+				<span class="value" id="scoreDisplay">0</span>
+			</div>
+			<div class="score-item">
+				<span class="label">最高</span>
+				<span class="value" id="bestScoreDisplay">0</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- 控制栏 -->
+	<div class="controls">
+		<span class="hint">← ↑ → ↓ 或滑动</span>
+		<button class="btn" id="newGameBtn">新游戏</button>
+	</div>
+
+	<!-- 网格 -->
+	<div class="grid-wrapper" id="gridWrapper">
+		<div class="grid" id="grid"></div>
+
+		<!-- 结束 / 胜利遮罩 -->
+		<div class="overlay" id="overlay">
+			<div class="message" id="overlayMessage">游戏结束!</div>
+			<div class="sub-message" id="overlaySub">再试一次吧</div>
+			<button class="btn" id="overlayBtn">再来一局</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	(function() {
+		'use strict';
+
+		// --- 配置 ---
+		const SIZE = 4;
+		const WIN_VALUE = 2048;
+		const STORAGE_KEY = 'game2048_best';
+
+		// --- DOM 引用 ---
+		const gridEl = document.getElementById('grid');
+		const scoreDisplay = document.getElementById('scoreDisplay');
+		const bestDisplay = document.getElementById('bestScoreDisplay');
+		const overlay = document.getElementById('overlay');
+		const overlayMsg = document.getElementById('overlayMessage');
+		const overlaySub = document.getElementById('overlaySub');
+		const overlayBtn = document.getElementById('overlayBtn');
+		const newGameBtn = document.getElementById('newGameBtn');
+		const gridWrapper = document.getElementById('gridWrapper');
+
+		// --- 状态 ---
+		let grid = [];
+		let score = 0;
+		let bestScore = 0;
+		let gameOver = false;
+		let won = false; // 是否已经胜利（但还能继续）
+		let keepPlaying = false; // 胜利后是否继续
+
+		// --- 初始化 ---
+		function init() {
+			// 读取最高分
+			bestScore = parseInt(localStorage.getItem(STORAGE_KEY), 10) || 0;
+			updateBestDisplay();
+
+			grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+			score = 0;
+			gameOver = false;
+			won = false;
+			keepPlaying = false;
+			overlay.classList.remove('active');
+			updateScoreDisplay();
+
+			// 生成两个初始方块
+			spawnTile();
+			spawnTile();
+
+			render();
+		}
+
+		// --- 工具 ---
+		function getEmptyCells() {
+			const cells = [];
+			for (let r = 0; r < SIZE; r++) {
+				for (let c = 0; c < SIZE; c++) {
+					if (grid[r][c] === 0) cells.push({ r, c });
+				}
+			}
+			return cells;
+		}
+
+		function spawnTile() {
+			const empty = getEmptyCells();
+			if (empty.length === 0) return false;
+			const { r, c } = empty[Math.floor(Math.random() * empty.length)];
+			grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+			return true;
+		}
+
+		// --- 核心移动逻辑 (方向: 0上, 1右, 2下, 3左) ---
+		function move(direction) {
+			if (gameOver) return false;
+
+			// 复制当前网格用于比较
+			const oldGrid = grid.map(row => [...row]);
+
+			// 根据方向处理
+			if (direction === 0) { // 上
+				for (let c = 0; c < SIZE; c++) {
+					let col = [];
+					for (let r = 0; r < SIZE; r++) col.push(grid[r][c]);
+					const newCol = processLine(col);
+					for (let r = 0; r < SIZE; r++) grid[r][c] = newCol[r];
+				}
+			} else if (direction === 1) { // 右
+				for (let r = 0; r < SIZE; r++) {
+					grid[r] = processLine([...grid[r]].reverse()).reverse();
+				}
+			} else if (direction === 2) { // 下
+				for (let c = 0; c < SIZE; c++) {
+					let col = [];
+					for (let r = SIZE - 1; r >= 0; r--) col.push(grid[r][c]);
+					const newCol = processLine(col);
+					for (let r = SIZE - 1; r >= 0; r--) grid[r][c] = newCol[SIZE - 1 - r];
+				}
+			} else if (direction === 3) { // 左
+				for (let r = 0; r < SIZE; r++) {
+					grid[r] = processLine(grid[r]);
+				}
+			}
+
+			// 检查是否发生变化
+			let changed = false;
+			for (let r = 0; r < SIZE; r++) {
+				for (let c = 0; c < SIZE; c++) {
+					if (grid[r][c] !== oldGrid[r][c]) { changed = true; break; }
+				}
+				if (changed) break;
+			}
+			if (!changed) return false;
+
+			// 生成新方块
+			spawnTile();
+
+			// 更新分数显示
+			updateScoreDisplay();
+
+			// 渲染
+			render();
+
+			// 检查胜利 (如果还没赢过)
+			if (!won && !keepPlaying) {
+				for (let r = 0; r < SIZE; r++) {
+					for (let c = 0; c < SIZE; c++) {
+						if (grid[r][c] === WIN_VALUE) {
+							won = true;
+							showOverlay('🎉 你赢了!', '太棒了！继续挑战更高分数吧', true);
+							return true;
+						}
+					}
+				}
+			}
+
+			// 检查游戏结束
+			if (isGameOver()) {
+				gameOver = true;
+				showOverlay('游戏结束', '再接再厉!', false);
+			}
+
+			return true;
+		}
+
+		// 处理一行/列 (合并)
+		function processLine(line) {
+			// 去掉零
+			let filtered = line.filter(v => v !== 0);
+			let result = [];
+			let i = 0;
+			let mergeScore = 0;
+			while (i < filtered.length) {
+				if (i + 1 < filtered.length && filtered[i] === filtered[i + 1]) {
+					const val = filtered[i] * 2;
+					result.push(val);
+					mergeScore += val;
+					i += 2;
+				} else {
+					result.push(filtered[i]);
+					i++;
+				}
+			}
+			// 补零
+			while (result.length < SIZE) {
+				result.push(0);
+			}
+			// 增加分数
+			if (mergeScore > 0) {
+				score += mergeScore;
+				if (score > bestScore) {
+					bestScore = score;
+					localStorage.setItem(STORAGE_KEY, String(bestScore));
+					updateBestDisplay();
+				}
+				updateScoreDisplay();
+			}
+			return result;
+		}
+
+		// --- 检查游戏是否结束 ---
+		function isGameOver() {
+			// 有空格子
+			for (let r = 0; r < SIZE; r++) {
+				for (let c = 0; c < SIZE; c++) {
+					if (grid[r][c] === 0) return false;
+				}
+			}
+			// 有相邻相同
+			for (let r = 0; r < SIZE; r++) {
+				for (let c = 0; c < SIZE; c++) {
+					const val = grid[r][c];
+					if (c + 1 < SIZE && grid[r][c + 1] === val) return false;
+					if (r + 1 < SIZE && grid[r + 1][c] === val) return false;
+				}
+			}
+			return true;
+		}
+
+		// --- 渲染 ---
+		function render() {
+			gridEl.innerHTML = '';
+			for (let r = 0; r < SIZE; r++) {
+				for (let c = 0; c < SIZE; c++) {
+					const cell = document.createElement('div');
+					cell.className = 'cell';
+					const val = grid[r][c];
+					if (val === 0) {
+						cell.classList.add('empty');
+						cell.dataset.value = '0';
+					} else {
+						cell.dataset.value = String(val);
+						cell.textContent = val;
+					}
+					// 标记位置用于动画 (data属性)
+					cell.dataset.r = r;
+					cell.dataset.c = c;
+					gridEl.appendChild(cell);
+				}
+			}
+
+			// 添加弹出动画 (每个有值的格子)
+			// 利用 MutationObserver 或简单延迟，但这里直接添加类
+			// 因为每次重新创建，我们需要标记新出现的格子
+			// 简单做法: 给所有非空格添加 pop 类 (会短暂触发)
+			// 为了更好的体验，我们可以记录上次的状态，但为了简洁，略过复杂 diff
+			// 改用更简单的方式: 从数据驱动，每次渲染都重新创建，给每个格子加 pop 类会有闪烁，不好。
+			// 我们利用之前添加的 "pop" 类，但需要精确控制。
+			// 改为: 每次渲染时，对于有值的格子，短暂添加 pop 类 (通过 setTimeout 移除)
+			const cells = gridEl.querySelectorAll('.cell:not(.empty)');
+			cells.forEach(el => {
+				el.classList.add('pop');
+			});
+			// 清除 pop 类避免累积
+			setTimeout(() => {
+				cells.forEach(el => el.classList.remove('pop'));
+			}, 200);
+		}
+
+		// --- 更新分数显示 ---
+		function updateScoreDisplay() {
+			scoreDisplay.textContent = score;
+		}
+
+		function updateBestDisplay() {
+			bestDisplay.textContent = bestScore;
+		}
+
+		// --- 显示遮罩 ---
+		function showOverlay(message, sub, isWin) {
+			overlayMsg.textContent = message;
+			overlaySub.textContent = sub || '';
+			overlay.classList.add('active');
+			// 如果是胜利，按钮文字改为 "继续"
+			if (isWin && !gameOver) {
+				overlayBtn.textContent = '继续挑战';
+				// 点击继续 = 关闭遮罩，继续游戏
+				overlayBtn.onclick = function() {
+					overlay.classList.remove('active');
+					keepPlaying = true;
+					// 移除事件监听避免干扰
+					overlayBtn.onclick = null;
+				};
+			} else {
+				overlayBtn.textContent = '再来一局';
+				overlayBtn.onclick = function() {
+					init();
+				};
+			}
+		}
+
+		// --- 键盘事件 ---
+		function onKeydown(e) {
+			const key = e.key;
+			let direction = -1;
+			if (key === 'ArrowUp') direction = 0;
+			else if (key === 'ArrowRight') direction = 1;
+			else if (key === 'ArrowDown') direction = 2;
+			else if (key === 'ArrowLeft') direction = 3;
+			else return;
+
+			e.preventDefault();
+			if (direction !== -1) {
+				move(direction);
+			}
+		}
+
+		// --- 触摸事件 (支持滑动) ---
+		let touchStartX = 0;
+		let touchStartY = 0;
+		let isTouching = false;
+
+		function onTouchStart(e) {
+			const touch = e.touches[0];
+			touchStartX = touch.clientX;
+			touchStartY = touch.clientY;
+			isTouching = true;
+		}
+
+		function onTouchEnd(e) {
+			if (!isTouching) return;
+			isTouching = false;
+			// 获取结束位置
+			let endX = 0,
+				endY = 0;
+			if (e.changedTouches && e.changedTouches.length > 0) {
+				endX = e.changedTouches[0].clientX;
+				endY = e.changedTouches[0].clientY;
+			} else {
+				return;
+			}
+
+			const dx = endX - touchStartX;
+			const dy = endY - touchStartY;
+			const absDx = Math.abs(dx);
+			const absDy = Math.abs(dy);
+
+			if (Math.max(absDx, absDy) < 20) return; // 太短忽略
+
+			let direction = -1;
+			if (absDx > absDy) {
+				direction = dx > 0 ? 1 : 3; // 右 / 左
+			} else {
+				direction = dy > 0 ? 2 : 0; // 下 / 上
+			}
+			move(direction);
+		}
+
+		// 阻止触摸滚动
+		function onTouchMove(e) {
+			e.preventDefault();
+		}
+
+		// --- 初始化事件绑定 ---
+		function bindEvents() {
+			window.addEventListener('keydown', onKeydown);
+			gridWrapper.addEventListener('touchstart', onTouchStart, { passive: true });
+			gridWrapper.addEventListener('touchend', onTouchEnd, { passive: true });
+			gridWrapper.addEventListener('touchmove', onTouchMove, { passive: false });
+
+			newGameBtn.addEventListener('click', init);
+			// overlayBtn 在 showOverlay 中动态绑定
+		}
+
+		// --- 启动 ---
+		init();
+		bindEvents();
+
+	})();
+</script>
+
+</body>
+</html>
