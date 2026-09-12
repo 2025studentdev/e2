@@ -1,0 +1,111 @@
+name: Deploy Astro + Hexo to Pages
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  # ---------- 分别构建 Astro ----------
+  build-astro:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install Astro deps
+        working-directory: site
+        run: npm ci
+
+      - name: Build Astro
+        working-directory: site
+        run: npm run build
+
+      - name: Upload Astro artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: astro-dist
+          path: site/dist
+
+  # ---------- 分别构建 Hexo ----------
+  build-hexo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: hexo-blog/package-lock.json
+
+      - name: Install Hexo deps
+        working-directory: hexo-blog
+        run: npm ci
+
+      - name: Build Hexo
+        working-directory: hexo-blog
+        run: npx hexo clean && npx hexo generate
+
+      - name: Upload Hexo artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hexo-public
+          path: hexo-blog/public
+
+  # ---------- 合并并发布 ----------
+  deploy:
+    needs: [build-astro, build-hexo]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download Astro artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: astro-dist
+          path: site-dist
+
+      - name: Download Hexo artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hexo-public
+          path: hexo-public
+
+      - name: Merge Hexo into /blog
+        run: |
+          mkdir -p site-dist/blog
+          cp -r hexo-public/. site-dist/blog/
+
+          # 防止 Hexo 的 CNAME 覆盖主域
+          rm -f site-dist/blog/CNAME
+
+          # Custom Domain
+          echo "www.e-2.top" > site-dist/CNAME
+
+          # 防止 Jekyll 处理下划线目录
+          touch site-dist/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site-dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
