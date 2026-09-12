@@ -1,222 +1,66 @@
+//This is /src/pages/index.astro
 ---
-// index.astro
-const title = '页面开发中';
+import Footer from '../components/index-react/Footer.astro';
+import StarGazing from '../components/index-react/StarGazing.tsx';
+import DynamicSchedule from '../components/index-react/DynamicSchedule.tsx';
+import '../styles/global.css';
 ---
 
-<!doctype html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={title} />
-
-    <!-- 首屏防闪烁：在样式生效前就把主题写到 html 上 -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>e2147dev</title>
     <script is:inline>
-        (() => {
-            try {
-                const saved = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
-            } catch {
-                document.documentElement.dataset.theme = 'light';
-            }
-        })();
+        const theme = localStorage.getItem('theme') || 'light';
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
     </script>
-
-    <style is:global>
-        :root {
-            --bg: #f0eee6;          /* Anthropic 米白 */
-            --fg: #1f1e1d;
-            --line: rgba(31, 30, 29, 0.14);
-            --hover: rgba(31, 30, 29, 0.06);
-        }
-
-        html[data-theme='dark'] {
-            --bg: #1f1e1d;
-            --fg: #f0eee6;
-            --line: rgba(240, 238, 230, 0.16);
-            --hover: rgba(240, 238, 230, 0.08);
-        }
-
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            margin: 0;
-            height: 100%;
-        }
-
-        body {
-            min-height: 100dvh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--bg);
-            color: var(--fg);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-            'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            transition: background-color 0.35s ease, color 0.35s ease;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        /* ---------- 大字 ---------- */
-        .headline {
-            margin: 0;
-            padding: 0 1.5rem;
-            font-family: 'Copernicus', 'Tiempos Headline', Georgia, 'Songti SC',
-            'Noto Serif SC', 'Source Han Serif SC', serif;
-            font-weight: 400;
-            font-size: clamp(2.25rem, 9vw, 6.5rem); /* 已调小 */
-            line-height: 1.1;
-            letter-spacing: 0.08em;
-            text-indent: 0.08em;
-            text-align: center;
-            text-wrap: balance;
-            animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-        }
-
-        @keyframes rise {
-            from {
-                opacity: 0;
-                transform: translateY(14px);
-            }
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-
-        /* ---------- 主题切换按钮 ---------- */
-        .theme-toggle {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 44px;
-            height: 44px;
-            display: grid;
-            place-items: center;
-            padding: 0;
-            border: 1px solid var(--line);
-            border-radius: 50%;
-            background: transparent;
-            color: var(--fg);
-            cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease,
-            transform 0.2s ease;
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--hover);
-            transform: translateY(-1px);
-        }
-
-        .theme-toggle:active {
-            transform: translateY(0);
-        }
-
-        .theme-toggle:focus-visible {
-            outline: 2px solid var(--fg);
-            outline-offset: 3px;
-        }
-
-        .theme-toggle .icon {
-            display: none;
-        }
-
-        html[data-theme='light'] .theme-toggle .icon-moon,
-        html[data-theme='dark'] .theme-toggle .icon-sun {
-            display: block;
-        }
-
-        @media (max-width: 480px) {
-            .theme-toggle {
-                top: 1rem;
-                right: 1rem;
-                width: 40px;
-                height: 40px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.001ms !important;
-                transition-duration: 0.001ms !important;
-            }
-        }
-    </style>
 </head>
+<body class="min-h-screen flex flex-col bg-[#F4F1EA] dark:bg-[#1A1A1A] text-[#1A1A1A] dark:text-[#F4F1EA] transition-colors duration-500 overflow-x-hidden">
 
-<body>
-<h1 class="headline">{title}</h1>
-
-<button class="theme-toggle" type="button" aria-label="切换深浅色模式">
-    <!-- 月亮：浅色模式下显示 -->
-    <svg
-            class="icon icon-moon"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-    >
-        <path d="M20.5 14.2A8.6 8.6 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7z" />
-    </svg>
-
-    <!-- 太阳：深色模式下显示 -->
-    <svg
-            class="icon icon-sun"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-    >
-        <circle cx="12" cy="12" r="4.2" />
-        <path
-                d="M12 2.4v2.6M12 19v2.6M2.4 12h2.6M19 12h2.6M5.2 5.2l1.85 1.85M16.95 16.95l1.85 1.85M18.8 5.2l-1.85 1.85M7.05 16.95 5.2 18.8"
-        />
-    </svg>
+<!-- 右上角主题切换按钮 -->
+<button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2.5 rounded-full bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg hover:scale-110 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all duration-300" aria-label="切换主题">
+    <svg id="theme-icon-light" class="w-5 h-5 hidden dark:block text-yellow-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg id="theme-icon-dark" class="w-5 h-5 block dark:hidden text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
 </button>
 
+<!-- 第一屏：Hero -->
+<section class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative">
+    <h1 class="text-6xl md:text-8xl font-bold tracking-tight text-[#1A1A1A] dark:text-[#F4F1EA] transition-colors duration-500">e2147dev</h1>
+    <p class="mt-6 text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-light tracking-widest transition-colors duration-500">学最好的别人，做最好的自己</p>
+</section>
+
+<!-- 第二屏：课程表（React 组件，必须加 client:load） -->
+<section class="min-h-screen flex items-center justify-center px-4 py-20 bg-white/40 dark:bg-black/20 transition-colors duration-500">
+    <DynamicSchedule client:load />
+</section>
+
+<!-- 第三屏：星空（React 组件，必须加 client:load） -->
+<section class="h-screen w-full relative">
+    <StarGazing client:load />
+</section>
+
+<!-- 页脚 -->
+<Footer />
+
+<!-- 主题切换逻辑 -->
 <script is:inline>
-    (() => {
-        const root = document.documentElement;
-        const btn = document.querySelector('.theme-toggle');
-        if (!btn) return;
-
-        const sync = () => {
-            const isDark = root.dataset.theme === 'dark';
-            btn.setAttribute('aria-label', isDark ? '切换到浅色模式' : '切换到深色模式');
-            btn.setAttribute('aria-pressed', String(isDark));
-        };
-
-        btn.addEventListener('click', () => {
-            const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-            root.dataset.theme = next;
-            try {
-                localStorage.setItem('theme', next);
-            } catch {}
-            sync();
-        });
-
-        sync();
-    })();
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    });
 </script>
 </body>
 </html>
