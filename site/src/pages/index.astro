@@ -40,6 +40,43 @@ import '../styles/global.css';
     <DynamicSchedule client:load />
 </section>
 
+<!-- 入口导航：三个按钮 -->
+<section class="flex items-center justify-center px-6 py-24 md:py-32">
+    <div class="grid w-full max-w-4xl grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+
+        <!-- 小游戏 -->
+        <a href="/2048"
+           class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-[#1A1A1A]/10 dark:border-[#F4F1EA]/10 bg-white/40 dark:bg-black/20 backdrop-blur-md px-6 py-10 text-center shadow-lg shadow-black/5 dark:shadow-black/30 transition-all duration-300 hover:-translate-y-1 hover:border-[#1A1A1A]/25 dark:hover:border-[#F4F1EA]/25 hover:bg-white/70 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]/40 dark:focus-visible:ring-[#F4F1EA]/40">
+            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200/80 dark:bg-gray-800/80 text-[#1A1A1A] dark:text-[#F4F1EA] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1A1A1A] group-hover:text-[#F4F1EA] dark:group-hover:bg-[#F4F1EA] dark:group-hover:text-[#1A1A1A]">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            </span>
+            <span class="text-lg font-light tracking-widest">小游戏</span>
+            <span class="text-xs tracking-[0.2em] text-gray-500 dark:text-gray-400 transition-colors duration-500">2048</span>
+        </a>
+
+        <!-- 博客 -->
+        <a href="/blog"
+           class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-[#1A1A1A]/10 dark:border-[#F4F1EA]/10 bg-white/40 dark:bg-black/20 backdrop-blur-md px-6 py-10 text-center shadow-lg shadow-black/5 dark:shadow-black/30 transition-all duration-300 hover:-translate-y-1 hover:border-[#1A1A1A]/25 dark:hover:border-[#F4F1EA]/25 hover:bg-white/70 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]/40 dark:focus-visible:ring-[#F4F1EA]/40">
+            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200/80 dark:bg-gray-800/80 text-[#1A1A1A] dark:text-[#F4F1EA] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1A1A1A] group-hover:text-[#F4F1EA] dark:group-hover:bg-[#F4F1EA] dark:group-hover:text-[#1A1A1A]">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+            </span>
+            <span class="text-lg font-light tracking-widest">博客</span>
+            <span class="text-xs tracking-[0.2em] text-gray-500 dark:text-gray-400 transition-colors duration-500">BLOG</span>
+        </a>
+
+        <!-- 关于 -->
+        <a href="/about"
+           class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-[#1A1A1A]/10 dark:border-[#F4F1EA]/10 bg-white/40 dark:bg-black/20 backdrop-blur-md px-6 py-10 text-center shadow-lg shadow-black/5 dark:shadow-black/30 transition-all duration-300 hover:-translate-y-1 hover:border-[#1A1A1A]/25 dark:hover:border-[#F4F1EA]/25 hover:bg-white/70 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]/40 dark:focus-visible:ring-[#F4F1EA]/40">
+            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200/80 dark:bg-gray-800/80 text-[#1A1A1A] dark:text-[#F4F1EA] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1A1A1A] group-hover:text-[#F4F1EA] dark:group-hover:bg-[#F4F1EA] dark:group-hover:text-[#1A1A1A]">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+            </span>
+            <span class="text-lg font-light tracking-widest">关于</span>
+            <span class="text-xs tracking-[0.2em] text-gray-500 dark:text-gray-400 transition-colors duration-500">ABOUT</span>
+        </a>
+
+    </div>
+</section>
+
 <!-- 第三屏：星空（React 组件，必须加 client:load） -->
 <section class="h-screen w-full relative">
     <StarGazing client:load />
