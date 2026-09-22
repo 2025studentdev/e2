@@ -1,73 +1,117 @@
-//This is /src/components/index-react/DynamicSchedule.tsx
+// /src/components/index-react/DynamicSchedule.tsx
 import React, { useState, useEffect } from 'react';
 import { classConfig } from './classconfig';
 
-export default function DynamicSchedule() {
-    const [dayInfo, setDayInfo] = useState<{
-        dayKey: string;
-        displayName: string;
-        isWeekend: boolean;
-    } | null>(null);
+const DAY_KEYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const DISPLAY_NAMES = ['日', '一', '二', '三', '四', '五', '六'];
 
-    useEffect(() => {
-        const day = new Date().getDay();
-        const dayKeys = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const displayNames = ['日', '一', '二', '三', '四', '五', '六'];
-        const dayKey = dayKeys[day];
-        const isWeekend = day === 0 || day === 6;
-        setDayInfo({ dayKey, displayName: displayNames[day], isWeekend });
-    }, []);
+type DayInfo = {
+    dayKey: string;
+    displayName: string;
+    isWeekend: boolean;
+};
 
-    if (!dayInfo) {
-        return (
-            <div className="w-full max-w-sm mx-auto p-6 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-center text-gray-500 dark:text-slate-400 shadow-xl transition-colors duration-500">
-                加载中...
+function getDayInfo(date: Date): DayInfo {
+    const day = date.getDay();
+    return {
+        dayKey: DAY_KEYS[day],
+        displayName: DISPLAY_NAMES[day],
+        isWeekend: day === 0 || day === 6,
+    };
+}
+
+function Period({ label, subjects }: { label: string; subjects: string[] }) {
+    return (
+        <div className="grid grid-cols-[2.75rem_1fr] items-start gap-x-3">
+            <div className="pt-[7px] text-[10px] font-medium tracking-[0.25em] text-[#1A1A1A]/40">
+                {label}
             </div>
-        );
-    }
-
-    if (dayInfo.isWeekend) {
-        return (
-            <div className="w-full max-w-sm mx-auto p-6 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-center shadow-xl transition-colors duration-500">
-                <h2 className="text-2xl font-bold text-sky-600 dark:text-sky-400 mb-2">放假了</h2>
-                <p className="text-gray-500 dark:text-slate-400 text-sm">今天不上课</p>
+            <div className="flex flex-wrap gap-1.5">
+                {subjects.map((subject, idx) => (
+                    <span
+                        key={idx}
+                        className="rounded-lg bg-[#1A1A1A]/[0.06] px-2.5 py-[7px] text-[13px] font-light leading-none tracking-wide text-[#1A1A1A]/90"
+                    >
+                        {subject}
+                    </span>
+                ))}
             </div>
-        );
-    }
+        </div>
+    );
+}
 
-    const schedule = classConfig[dayInfo.dayKey];
+function Today({ dayInfo }: { dayInfo: DayInfo }) {
+    const schedule = !dayInfo.isWeekend ? classConfig[dayInfo.dayKey] : null;
+    const morning = schedule?.Morning ?? [];
+    const afternoon = schedule?.Afternoon ?? [];
+    const hasCourse = morning.length > 0 || afternoon.length > 0;
 
     return (
-        <div className="w-full max-w-sm mx-auto p-6 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-xl transition-all hover:shadow-2xl hover:border-gray-300 dark:hover:border-slate-600">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-slate-200 mb-5 border-b border-gray-200 dark:border-slate-700 pb-3 transition-colors duration-500">
-                今天星期{dayInfo.displayName}
-            </h2>
-            {schedule ? (
-                <div className="space-y-5">
-                    <div className="flex flex-col gap-2">
-                        <span className="text-sm font-semibold text-gray-500 dark:text-slate-400 tracking-wider transition-colors duration-500">上午</span>
-                        <div className="flex flex-wrap gap-2">
-                            {schedule.Morning.map((subject, idx) => (
-                                <span key={idx} className="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30 transition-colors duration-500">
-                  {subject}
+        <div className="px-6 pt-6 pb-6">
+            <div className="mb-5 flex items-baseline gap-3">
+                <h2 className="text-[26px] font-light leading-none tracking-tight text-[#1A1A1A]">
+                    星期{dayInfo.displayName}
+                </h2>
+                <span className="text-[10px] font-medium tracking-[0.3em] text-[#1A1A1A]/40">
+                    今日
                 </span>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        <span className="text-sm font-semibold text-gray-500 dark:text-slate-400 tracking-wider transition-colors duration-500">下午</span>
-                        <div className="flex flex-wrap gap-2">
-                            {schedule.Afternoon.map((subject, idx) => (
-                                <span key={idx} className="px-3 py-1 text-sm rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 transition-colors duration-500">
-                  {subject}
-                </span>
-                            ))}
-                        </div>
-                    </div>
+            </div>
+
+            {dayInfo.isWeekend ? (
+                <p className="text-[13px] font-light tracking-[0.15em] text-[#1A1A1A]/55">今日休息</p>
+            ) : hasCourse ? (
+                <div className="space-y-4">
+                    {morning.length > 0 && <Period label="上午" subjects={morning} />}
+                    {afternoon.length > 0 && <Period label="下午" subjects={afternoon} />}
                 </div>
             ) : (
-                <div className="text-gray-500 dark:text-slate-500 text-sm text-center py-4 transition-colors duration-500">暂无课程安排</div>
+                <p className="text-[13px] font-light tracking-[0.15em] text-[#1A1A1A]/55">暂无课程</p>
             )}
+        </div>
+    );
+}
+
+function Tomorrow({ dayInfo }: { dayInfo: DayInfo }) {
+    const schedule = !dayInfo.isWeekend ? classConfig[dayInfo.dayKey] : null;
+    const all = [...(schedule?.Morning ?? []), ...(schedule?.Afternoon ?? [])];
+
+    const summary = dayInfo.isWeekend ? '放假' : all.length > 0 ? all.join(' · ') : '暂无课程';
+
+    return (
+        <div className="border-t border-[#1A1A1A]/8 bg-[#1A1A1A]/[0.025] px-6 py-4">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span className="shrink-0 text-[10px] font-medium tracking-[0.3em] text-[#1A1A1A]/40">明日</span>
+                <span className="shrink-0 text-[12px] font-light tracking-[0.08em] text-[#1A1A1A]/55">星期{dayInfo.displayName}</span>
+                <span className="text-[12px] font-light leading-relaxed tracking-wide text-[#1A1A1A]/55">{summary}</span>
+            </div>
+        </div>
+    );
+}
+
+export default function DynamicSchedule() {
+    const [today, setToday] = useState<DayInfo | null>(null);
+    const [tomorrow, setTomorrow] = useState<DayInfo | null>(null);
+
+    useEffect(() => {
+        const now = new Date();
+        const tmr = new Date(now);
+        tmr.setDate(now.getDate() + 1);
+        setToday(getDayInfo(now));
+        setTomorrow(getDayInfo(tmr));
+    }, []);
+
+    if (!today || !tomorrow) {
+        return (
+            <div className="w-full max-w-md mx-auto px-6 py-6 rounded-[18px] border border-[#1A1A1A]/10 bg-white/70 text-[13px] font-light tracking-[0.2em] text-[#1A1A1A]/55 shadow-[0_8px_32px_-12px_rgba(26,26,26,0.2)]">
+                加载中
+            </div>
+        );
+    }
+
+    return (
+        <div className="w-full max-w-md mx-auto rounded-[18px] border border-[#1A1A1A]/10 bg-white/70 shadow-[0_8px_32px_-12px_rgba(26,26,26,0.2)] overflow-hidden">
+            <Today dayInfo={today} />
+            <Tomorrow dayInfo={tomorrow} />
         </div>
     );
 }

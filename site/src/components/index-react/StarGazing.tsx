@@ -34,7 +34,6 @@ export default function StarGazing() {
         setStars(newStars);
     }, []);
 
-    // 6 条流星，位置、宽度、延迟、速度全部错开
     const meteors: Meteor[] = [
         { id: 1, top: '5%',  right: '15%', width: 180, delay: 0,   duration: 5 },
         { id: 2, top: '18%', right: '35%', width: 140, delay: 2.4, duration: 7 },
@@ -45,16 +44,16 @@ export default function StarGazing() {
     ];
 
     return (
-        <div className="relative w-full h-full overflow-hidden bg-gradient-to-b from-[#F4F1EA] via-[#E8E4DB] to-[#F4F1EA] dark:from-[#0b1021] dark:via-[#111a3a] dark:to-[#0a0e1c] flex flex-col items-center justify-center transition-colors duration-500">
-            {/* 背景中央微光（夜晚显示） */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(40,80,150,0.15)_0%,_transparent_60%)] pointer-events-none hidden dark:block" />
+        <div className="relative w-full h-full overflow-hidden bg-gradient-to-b from-[#0b1021] via-[#111a3a] to-[#0a0e1c] flex flex-col items-center justify-center">
+            {/* 背景中央微光 */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(40,80,150,0.15)_0%,_transparent_60%)] pointer-events-none" />
 
             {/* 闪烁的星星 */}
             <div className="absolute inset-0 pointer-events-none">
                 {stars.map((star) => (
                     <div
                         key={star.id}
-                        className="absolute rounded-full bg-gray-400 dark:bg-white transition-colors duration-500"
+                        className="absolute rounded-full bg-white"
                         style={{
                             width: `${star.size}px`,
                             height: `${star.size}px`,
@@ -66,8 +65,8 @@ export default function StarGazing() {
                 ))}
             </div>
 
-            {/* 流星（夜晚才显示） */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden hidden dark:block">
+            {/* 流星 */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 {meteors.map((m) => (
                     <div
                         key={m.id}
@@ -85,10 +84,10 @@ export default function StarGazing() {
 
             {/* 发光文字 */}
             <div className="relative z-10 text-center space-y-6 px-6">
-                <h1 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] dark:text-white tracking-[0.15em] [text-shadow:0_0_10px_rgba(255,255,255,0.8)] dark:[text-shadow:0_0_10px_rgba(255,255,255,0.8),0_0_20px_rgba(255,255,255,0.5),0_0_40px_rgba(80,140,255,0.6)] transition-all duration-500">
+                <h1 className="text-3xl md:text-5xl font-bold text-white tracking-[0.15em] [text-shadow:0_0_10px_rgba(255,255,255,0.8),0_0_20px_rgba(255,255,255,0.5),0_0_40px_rgba(80,140,255,0.6)]">
                     我们仰望同一片星空
                 </h1>
-                <h2 className="text-2xl md:text-4xl font-medium text-[#1A1A1A] dark:text-white tracking-[0.15em] [text-shadow:0_0_10px_rgba(255,255,255,0.8)] dark:[text-shadow:0_0_10px_rgba(255,255,255,0.8),0_0_20px_rgba(255,255,255,0.5),0_0_40px_rgba(80,140,255,0.6)] transition-all duration-500">
+                <h2 className="text-2xl md:text-4xl font-medium text-white tracking-[0.15em] [text-shadow:0_0_10px_rgba(255,255,255,0.8),0_0_20px_rgba(255,255,255,0.5),0_0_40px_rgba(80,140,255,0.6)]">
                     却各自走向不同的远方
                 </h2>
             </div>
@@ -102,7 +101,6 @@ export default function StarGazing() {
           position: absolute;
           height: 2px;
           border-radius: 9999px;
-          /* 头部在右端（亮），尾部向左延伸（淡），保证尾部朝向起点 */
           background: linear-gradient(270deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 20%, rgba(160,200,255,0.2) 60%, transparent 100%);
           opacity: 0;
           animation-name: shooting-star;
@@ -111,7 +109,6 @@ export default function StarGazing() {
           will-change: transform, opacity;
           transform-origin: right center;
         }
-        /* 发光头部 */
         .shooting-star::after {
           content: '';
           position: absolute;
@@ -124,7 +121,6 @@ export default function StarGazing() {
           background: white;
           box-shadow: 0 0 12px 3px rgba(180,220,255,0.9), 0 0 24px 6px rgba(120,180,255,0.5);
         }
-        /* 关键：rotate(135deg) 后，元素局部 X 轴正方向指向左下；translateX 用正数 = 往左下飞 */
         @keyframes shooting-star {
           0%   { transform: rotate(135deg) translateX(0);      opacity: 0; }
           8%   { opacity: 1; }
