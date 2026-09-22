@@ -1,0 +1,92 @@
+---
+import '../styles/global.css';
+import { getCollection } from 'astro:content';
+
+const docs = await getCollection('docs');
+
+// 按第一段路径分组
+const groups: Record<string, typeof docs> = {};
+for (const entry of docs) {
+    if (entry.id === 'index') continue;
+    const [head, ...rest] = entry.id.split('/');
+    const key = rest.length ? head : '其他';
+    (groups[key] ||= []).push(entry);
+}
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+</head>
+<body class="min-h-screen bg-white text-slate-800 antialiased">
+<div class="mx-auto flex max-w-6xl gap-10 px-6 py-10">
+
+    <aside class="w-56 shrink-0">
+        <a href="/docs" class="mb-6 flex items-center gap-2 text-slate-900">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <span class="font-semibold">My Docs</span>
+        </a>
+
+        <!-- 首页单独放 -->
+        <a href="/docs"
+           class:list={[
+               'mb-4 flex items-center gap-2 rounded-md px-3 py-2 text-sm transition',
+               currentPath === '/docs'
+                   ? 'bg-slate-900 text-white'
+                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+           ]}>
+            首页
+        </a>
+
+        <!-- 分组导航 -->
+        {Object.entries(groups).map(([name, items]) => (
+                <div class="mb-4">
+                    <div class="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        {name}
+                    </div>
+                    <div class="space-y-1">
+                        {items.map((entry) => {
+                            const href = `/docs/${entry.id}`;
+                            const active = currentPath === href;
+                            return (
+                                    <a href={href}
+                                       class:list={[
+                                           'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition',
+                                           active
+                                               ? 'bg-slate-900 text-white'
+                                               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                                       ]}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                             fill="none" stroke="currentColor" stroke-width="2"
+                                             stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                        </svg>
+                                        {entry.data.title}
+                                    </a>
+                            );
+                        })}
+                    </div>
+                </div>
+        ))}
+    </aside>
+
+    <main class="min-w-0 flex-1">
+        <article class="prose prose-slate max-w-none prose-headings:scroll-mt-20">
+            <slot />
+        </article>
+    </main>
+
+</div>
+</body>
+</html>

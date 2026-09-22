@@ -1,71 +1,17 @@
 ---
-//This is /src/pages/about.astro
-import Footer from '../components/index-react/Footer.astro';
-import '../styles/global.css';
+// /src/pages/about.astro
+import AboutApp from '../components/aboutSPA/AboutApp';
 ---
 
-<!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>关于 · e2147dev</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <script is:inline>
-        const theme = localStorage.getItem('theme') || 'light';
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>关于 · About</title>
+    <meta name="description" content="关于" />
 </head>
-<body class="min-h-screen flex flex-col bg-[#F4F1EA] dark:bg-[#1A1A1A] text-[#1A1A1A] dark:text-[#F4F1EA] transition-colors duration-500 overflow-x-hidden">
-
-<!-- 右上角主题切换按钮 -->
-<button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2.5 rounded-full bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg hover:scale-110 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all duration-300" aria-label="切换主题">
-    <svg id="theme-icon-light" class="w-5 h-5 hidden dark:block text-yellow-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-    <svg id="theme-icon-dark" class="w-5 h-5 block dark:hidden text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-</button>
-
-<!-- 返回首页 -->
-<a href="/" class="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg text-sm tracking-widest text-[#1A1A1A] dark:text-[#F4F1EA] hover:scale-105 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all duration-300" aria-label="返回首页">
-    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-    返回
-</a>
-
-<!-- 主体内容 -->
-<main class="flex-1 min-h-screen flex flex-col items-center justify-center text-center px-6">
-    <div class="flex flex-col items-center gap-8">
-        <!-- 转圈的图标 -->
-        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-white/40 dark:bg-black/20 backdrop-blur-md border border-[#1A1A1A]/10 dark:border-[#F4F1EA]/10 shadow-lg shadow-black/5 dark:shadow-black/30">
-            <svg class="w-8 h-8 text-[#1A1A1A] dark:text-[#F4F1EA] animate-spin [animation-duration:3s]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-            </svg>
-        </div>
-
-        <h1 class="text-4xl md:text-6xl font-bold tracking-tight">关于</h1>
-        <p class="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-light tracking-widest">该页面开发中</p>
-        <p class="text-sm tracking-[0.3em] text-gray-400 dark:text-gray-500 uppercase">Coming Soon</p>
-    </div>
-</main>
-
-<!-- 页脚 -->
-<Footer />
-
-<!-- 主题切换逻辑 -->
-<script is:inline>
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', () => {
-        const html = document.documentElement;
-        if (html.classList.contains('dark')) {
-            html.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        } else {
-            html.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        }
-    });
-</script>
+<body>
+<AboutApp client:only="react" />
 </body>
 </html>

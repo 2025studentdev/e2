@@ -1,0 +1,382 @@
+---
+// src/pages/links.astro
+type LinkFrontmatter = {
+    name?: string;
+    url?: string;
+    description?: string;
+    avatar?: string;
+};
+
+const modules = import.meta.glob('../content/links/*.md', {
+    eager: true,
+}) as Record<string, { frontmatter: LinkFrontmatter }>;
+
+const links = Object.values(modules)
+    .map((mod) => mod.frontmatter)
+    .filter((fm) => fm && fm.name && fm.url)
+    .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+
+const DEFAULT_AVATAR = 'https://e-2.top/default.svg';
+const year = new Date().getFullYear();
+
+const self = {
+    name: 'e2147dev',
+    url: 'https://e-2.top',
+    description: '学最好的别人，做最好的自己',
+    avatar: 'https://e-2.top/doge.png',
+};
+
+const contactEmail = 'e2147dev@proton.me';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>友情链接 · e2147dev</title>
+    <meta name="description" content="e2147dev 的友情链接" />
+</head>
+<body>
+<main class="page">
+    <header class="hero">
+        <h1>友情链接</h1>
+        <p>一些值得访问的站点。</p>
+    </header>
+
+    {
+        links.length > 0 ? (
+                <ul class="grid">
+                    {links.map((link) => (
+                            <li>
+                                <a
+                                        class="card"
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                >
+                                    <img
+                                            class="avatar"
+                                            src={link.avatar || DEFAULT_AVATAR}
+                                            alt={link.name}
+                                            loading="lazy"
+                                            decoding="async"
+                                    />
+                                    <div class="info">
+                    <span class="name">
+                      {link.name}
+                        <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                        >
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                      </svg>
+                    </span>
+                                        <span class="desc">{link.description}</span>
+                                    </div>
+                                </a>
+                            </li>
+                    ))}
+                </ul>
+        ) : (
+                <p class="empty">还没有友链，欢迎来交换。</p>
+        )
+    }
+
+    <section class="self">
+        <h2>加我友链</h2>
+        <p>
+            想交换友链，请先把下面这份信息加到你的站点，然后
+            <a class="mailto" href={`mailto:${contactEmail}`}>邮件告诉我</a>。
+        </p>
+        <div class="self-card">
+            <img
+                    class="avatar"
+                    src={self.avatar}
+                    alt={self.name}
+                    loading="lazy"
+                    decoding="async"
+            />
+            <div class="info">
+                <span class="name">{self.name}</span>
+                <span class="desc">{self.description}</span>
+                <div class="meta">
+                    <span>站点：<span class="selectable">{self.url}</span></span>
+                    <span>头像：<span class="selectable">{self.avatar}</span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <span>e2147</span>
+    <span>© {year} All rights reserved</span>
+</footer>
+</body>
+</html>
+
+<style>
+    :root {
+        --bg: #faf9f5;
+        --surface: #fffdf8;
+        --surface-hover: #f4fbfb;
+        --primary: #6fd3d1;
+        --primary-strong: #2fa8a8;
+        --text: #2f3437;
+        --text-muted: #6f746f;
+        --border: #e6e1d6;
+        --shadow: 0 1px 2px rgba(47, 52, 55, 0.04);
+        --shadow-hover: 0 6px 18px rgba(47, 52, 55, 0.06);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    a {
+        color: inherit;
+    }
+
+    .page {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 72px 24px 48px;
+    }
+
+    .hero {
+        margin-bottom: 48px;
+    }
+
+    .hero h1 {
+        margin: 0 0 8px;
+        font-size: 40px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+    }
+
+    .hero p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 15px;
+    }
+
+    .grid {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+
+    .card {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 18px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        text-decoration: none;
+        box-shadow: var(--shadow);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .card:hover {
+        border-color: var(--primary);
+        background: var(--surface-hover);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .card:focus-visible {
+        outline: 2px solid var(--primary-strong);
+        outline-offset: 2px;
+    }
+
+    .avatar {
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        object-fit: cover;
+        background: var(--border);
+        border: 1px solid var(--border);
+    }
+
+    .info {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .name {
+        font-weight: 600;
+        font-size: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .name svg {
+        width: 13px;
+        height: 13px;
+        color: var(--primary-strong);
+        opacity: 0.7;
+        flex-shrink: 0;
+    }
+
+    .desc {
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .empty {
+        margin: 32px 0;
+        padding: 32px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+        background: var(--surface);
+        border: 1px dashed var(--border);
+        border-radius: 16px;
+    }
+
+    .self {
+        margin-top: 72px;
+    }
+
+    .self h2 {
+        margin: 0 0 6px;
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.005em;
+    }
+
+    .self > p {
+        margin: 0 0 20px;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .mailto {
+        color: var(--primary-strong);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 1px;
+    }
+
+    .mailto:hover {
+        color: var(--primary);
+    }
+
+    .self-card {
+        display: flex;
+        gap: 18px;
+        padding: 24px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        align-items: flex-start;
+    }
+
+    .self-card .avatar {
+        width: 64px;
+        height: 64px;
+    }
+
+    .self-card .name {
+        font-size: 16px;
+    }
+
+    .self-card .desc {
+        margin-top: 2px;
+        color: var(--text);
+        font-size: 14px;
+        -webkit-line-clamp: unset;
+        line-clamp: unset;
+    }
+
+    .self-card .meta {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 13px;
+        color: var(--text-muted);
+        word-break: break-all;
+    }
+
+    .selectable {
+        color: var(--primary-strong);
+        user-select: all;
+    }
+
+    .footer {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    @media (max-width: 560px) {
+        .page {
+            padding: 48px 20px 32px;
+        }
+        .hero h1 {
+            font-size: 32px;
+        }
+        .hero {
+            margin-bottom: 32px;
+        }
+        .self {
+            margin-top: 48px;
+        }
+        .self-card {
+            flex-direction: column;
+            gap: 14px;
+            padding: 20px;
+        }
+        .footer {
+            padding: 20px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+    }
+</style>
