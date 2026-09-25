@@ -116,7 +116,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogGrid from '../../components/BlogGrid.astro';
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 10;
 const allPosts = (await getCollection('blog'))
   .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
@@ -147,7 +147,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import BlogGrid from '../../../components/BlogGrid.astro';
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 10;
 
 export async function getStaticPaths() {
   const allPosts = (await getCollection('blog'))
