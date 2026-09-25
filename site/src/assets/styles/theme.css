@@ -1,0 +1,15 @@
+/* 只放主题定义，不包含任何 @apply 或工具类 */
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-brand-50: #e8fbfb;
+    --color-brand-400: #4dd9da;
+    --color-brand-500: #1fcccd;
+    --color-brand-600: #17a8a9;
+    --color-brand-700: #128283;
+
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}

@@ -1,0 +1,71 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Pagination from './Pagination.astro';
+
+export interface Props {
+    posts: CollectionEntry<'blog'>[];
+    currentPage: number;
+    totalPages: number;
+    prevUrl: string | null;
+    nextUrl: string | null;
+    basePath?: string;
+}
+
+const {
+    posts,
+    currentPage,
+    totalPages,
+    prevUrl,
+    nextUrl,
+    basePath = '/blog',
+} = Astro.props;
+---
+
+<ul class="space-y-5">
+    {
+        posts.map((post) => (
+                <li>
+                    <a
+                            href={`/blog/${post.id.replace(/\.mdx?$/, '')}/`}
+                            class="group block border border-brand-500 p-5 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
+                    >
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                            {post.data.title}
+                        </h2>
+                        <time
+                                datetime={post.data.pubDate.toISOString()}
+                                class="text-sm text-gray-500 dark:text-gray-400 mt-1 block"
+                        >
+                            {post.data.pubDate.toLocaleDateString('zh-CN', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })}
+                        </time>
+                        {post.data.description && (
+                                <p class="text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
+                                    {post.data.description}
+                                </p>
+                        )}
+                        {post.data.tags.length > 0 && (
+                                <div class="flex gap-2 mt-3">
+                                    {post.data.tags.map((tag) => (
+                                            <span class="text-xs px-2 py-0.5 border border-brand-500 text-brand-600 dark:text-brand-400">
+                  {tag}
+                </span>
+                                    ))}
+                                </div>
+                        )}
+                    </a>
+                </li>
+        ))
+    }
+</ul>
+
+<Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        prevUrl={prevUrl}
+        nextUrl={nextUrl}
+        basePath={basePath}
+/>

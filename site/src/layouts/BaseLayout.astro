@@ -1,0 +1,48 @@
+---
+import Header from '../components/blog/Header.astro';
+import Footer from '../components/blog/Footer.astro';
+import '../assets/styles/global.css';
+
+export interface Props {
+    title: string;
+    description?: string;
+}
+
+const {
+    title,
+    description = '使用 Astro 7 和 Tailwind CSS 4 构建的博客',
+} = Astro.props;
+
+const siteName = 'My Astro Blog';
+const fullTitle = `${title} | ${siteName}`;
+---
+
+<!doctype html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <link
+            rel="alternate"
+            type="application/rss+xml"
+            title={siteName}
+            href="/rss.xml"
+    />
+</head>
+<body class="min-h-screen flex flex-col">
+<Header />
+<main class="flex-1">
+    <slot />
+</main>
+<Footer />
+</body>
+</html>

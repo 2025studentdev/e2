@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* 引用主题文件，让 @apply 能访问自定义颜色 */
+@reference "./theme.css";
+
+body {
+    @apply bg-white text-gray-900 antialiased;
+    @variant dark {
+        @apply bg-gray-950 text-gray-100;
+    }
+    font-family: var(--font-sans);
+}
+
+.prose {
+    @apply max-w-none leading-relaxed;
+}
+.prose h2 {
+    @apply text-2xl font-bold mt-10 mb-4;
+}
+.prose h3 {
+    @apply text-xl font-semibold mt-8 mb-3;
+}
+.prose p {
+    @apply mb-5 text-gray-700;
+    @variant dark {
+        @apply text-gray-300;
+    }
+}
+.prose a {
+    @apply text-brand-600 underline underline-offset-4;
+    @variant dark {
+        @apply text-brand-400;
+    }
+}
+.prose code {
+    @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono;
+    @variant dark {
+        @apply bg-gray-800;
+    }
+}
+.prose pre {
+    @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto mb-6;
+    @variant dark {
+        @apply bg-gray-800;
+    }
+}
+.prose pre code {
+    @apply bg-transparent p-0;
+}
+.prose ul {
+    @apply list-disc pl-6 mb-5 space-y-2;
+}
+.prose ol {
+    @apply list-decimal pl-6 mb-5 space-y-2;
+}
+.prose blockquote {
+    @apply border-l-4 border-brand-500 pl-4 italic text-gray-600 my-6;
+    @variant dark {
+        @apply text-gray-400;
+    }
+}
+.prose img {
+    @apply rounded-lg my-6;
+}
+.prose hr {
+    @apply border-gray-200 my-10;
+    @variant dark {
+        @apply border-gray-800;
+    }
+}
+
+
+

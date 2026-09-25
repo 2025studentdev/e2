@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BlogGrid from '../../../components/blog/BlogGrid.astro';
+
+const PAGE_SIZE = 9;
+
+export async function getStaticPaths() {
+    const allPosts = (await getCollection('blog'))
+        .filter((post) => !post.data.draft)
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+    const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
+
+    // 第 1 页由 index.astro 处理，这里只生成第 2 到第 N 页
+    return Array.from({ length: totalPages - 1 }, (_, i) => ({
+        params: { page: String(i + 2) },
+    }));
+}
+
+const currentPage = Number(Astro.params.page);
+
+const allPosts = (await getCollection('blog'))
+    .filter((post) => !post.data.draft)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
+const start = (currentPage - 1) * PAGE_SIZE;
+const posts = allPosts.slice(start, start + PAGE_SIZE);
+
+const prevUrl =
+    currentPage === 2 ? '/blog' : `/blog/page/${currentPage - 1}`;
+const nextUrl =
+    currentPage < totalPages ? `/blog/page/${currentPage + 1}` : null;
+---
+
+<BaseLayout
+        title={`博客 - 第 ${currentPage} 页`}
+        description={`博客文章列表第 ${currentPage} 页`}
+>
+    <section class="max-w-4xl mx-auto px-4 py-12">
+        <h1 class="text-3xl font-bold mb-2">博客</h1>
+        <p class="text-gray-500 dark:text-gray-400 mb-8">
+            第 {currentPage} 页 / 共 {totalPages} 页
+        </p>
+
+        <BlogGrid
+                posts={posts}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                prevUrl={prevUrl}
+                nextUrl={nextUrl}
+                basePath="/blog"
+        />
+    </section>
+</BaseLayout>

@@ -1,3 +1,44 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 @plugin "@tailwindcss/typography";
+
+@media (prefers-color-scheme: dark) {
+    .astro-code,
+    .astro-code span {
+        color: var(--shiki-dark) !important;
+        background-color: var(--shiki-dark-bg) !important;
+    }
+}
+
+.callout {
+    border-left: 4px solid;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    border-radius: 0 6px 6px 0;
+}
+.callout-tip     { border-color: #22c55e; background: #f0fdf4; }
+.callout-warning { border-color: #f59e0b; background: #fffbeb; }
+.callout-danger  { border-color: #ef4444; background: #fef2f2; }
+.callout-note    { border-color: #3b82f6; background: #eff6ff; }
+
+
+
+
+@media (prefers-color-scheme: dark) {
+    .astro-code,
+    .astro-code span {
+        color: var(--astro-code-dark) !important;
+        background-color: var(--astro-code-dark-bg) !important;
+    }
+}
+
+.callout {
+    border-left: 4px solid;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    border-radius: 0 6px 6px 0;
+}
+.callout-tip     { border-color: #22c55e; background: #f0fdf4; }
+.callout-warning { border-color: #f59e0b; background: #fffbeb; }
+.callout-danger  { border-color: #ef4444; background: #fef2f2; }
+.callout-note    { border-color: #3b82f6; background: #eff6ff; }

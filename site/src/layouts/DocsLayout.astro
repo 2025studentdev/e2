@@ -26,6 +26,7 @@ const { title } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" />
 </head>
 <body class="min-h-screen bg-white text-slate-800 antialiased">
 
@@ -85,37 +86,49 @@ const { title } = Astro.props;
             首页
         </a>
 
-        <!-- 分组导航 -->
-        {orderedGroups.map(([name, items]) => (
-                <div class="mb-4">
-                    <div class="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                        {name}
-                    </div>
-                    <div class="space-y-1">
-                        {items.map((entry) => {
-                            const href = `/docs/${entry.id}`;
-                            const active = currentPath === href;
-                            return (
-                                    <a href={href}
-                                       class:list={[
-                                           'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition',
-                                           active
-                                               ? 'bg-slate-900 text-white'
-                                               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-                                       ]}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                             fill="none" stroke="currentColor" stroke-width="2"
-                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                            <polyline points="14 2 14 8 20 8" />
-                                        </svg>
-                                        <span class="truncate">{entry.data.title}</span>
-                                    </a>
-                            );
-                        })}
-                    </div>
-                </div>
-        ))}
+        <!-- 分组导航 (可折叠) -->
+        {orderedGroups.map(([name, items]) => {
+            // 判断当前页面是否属于这个分组，如果是，则默认展开该分组
+            const isGroupActive = items.some((entry) => currentPath === `/docs/${entry.id}`);
+
+            return (
+                    <details class="group mb-4" open={isGroupActive}>
+                        <!-- 大标题（点击可展开/收起） -->
+                        <summary class="flex cursor-pointer select-none items-center justify-between rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-400 hover:text-slate-600 transition">
+                            {name}
+                            <!-- 添加一个小箭头图标，展开时旋转 -->
+                            <svg class="h-4 w-4 transition-transform group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </summary>
+
+                        <!-- 小标题（折叠内容） -->
+                        <div class="mt-1 space-y-1">
+                            {items.map((entry) => {
+                                const href = `/docs/${entry.id}`;
+                                const active = currentPath === href;
+                                return (
+                                        <a href={href}
+                                           class:list={[
+                                               'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition',
+                                               active
+                                                   ? 'bg-slate-900 text-white'
+                                                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                                           ]}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                <polyline points="14 2 14 8 20 8" />
+                                            </svg>
+                                            <span class="truncate">{entry.data.title}</span>
+                                        </a>
+                                );
+                            })}
+                        </div>
+                    </details>
+            );
+        })}
     </aside>
 
     <!-- 正文 -->
