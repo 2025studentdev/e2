@@ -5,37 +5,23 @@ const AboutApp: React.FC = () => {
         <div className="about-app">
             <main className="container">
                 <h1 className="title">E2147dev</h1>
-                <p className="subtitle">一个 ID 背后的含义</p>
-
-                <div className="formula">
-                    <span className="dim">2</span>
-                    <sup>31</sup>
-                    <span className="dim"> − 1 = </span>
-                    <span className="highlight">2,147,483,647</span>
-                </div>
 
                 <ul className="list">
                     <li>
                         <span className="key">E</span>
-                        <span className="text">Electronic — 电子，计算机与数字世界。</span>
+                        <span className="text">Electronic — 电子的</span>
                     </li>
                     <li>
                         <span className="key">2147</span>
-                        <span className="text">
-              2³¹ − 1，32 位有符号整数最大值 <code>INT_MAX</code>。
-            </span>
+                        <span className="text">2³¹ − 1</span>
                     </li>
                     <li>
                         <span className="key">dev</span>
-                        <span className="text">Developer — 开发者，用代码构建东西的人。</span>
+                        <span className="text">Developer</span>
                     </li>
                 </ul>
 
-                <p className="note">
-                    三部分拼在一起，就是这个名字：电子世界的开发者，站在整数的边界上。
-                </p>
-
-                <a className="links" href="../links">
+                <a className="links" href="/links">
                     <span>友情链接</span>
                     <svg
                         width="16"
@@ -79,39 +65,12 @@ const AboutApp: React.FC = () => {
         .title {
           font-size: clamp(40px, 9vw, 72px);
           line-height: 1;
-          margin: 0 0 12px;
+          margin: 0 0 40px;
           letter-spacing: -0.05em;
           background: linear-gradient(135deg, #ffffff 0%, #7ee787 45%, #58a6ff 100%);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-        }
-
-        .subtitle {
-          color: #8b949e;
-          font-size: 16px;
-          margin: 0 0 40px;
-        }
-
-        .formula {
-          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-          font-size: clamp(20px, 4vw, 32px);
-          letter-spacing: -0.03em;
-          margin-bottom: 40px;
-        }
-
-        .formula sup {
-          font-size: 0.55em;
-          color: #7ee787;
-        }
-
-        .dim {
-          color: #8b949e;
-        }
-
-        .highlight {
-          color: #7ee787;
-          text-shadow: 0 0 24px rgba(126, 231, 135, 0.3);
         }
 
         .list {
@@ -144,20 +103,6 @@ const AboutApp: React.FC = () => {
         .text {
           color: #c9d1d9;
           line-height: 1.7;
-        }
-
-        .text code {
-          color: #7ee787;
-          background: rgba(126, 231, 135, 0.1);
-          padding: 1px 6px;
-          border-radius: 5px;
-          font-size: 0.9em;
-        }
-
-        .note {
-          color: #8b949e;
-          line-height: 1.9;
-          margin: 0 0 40px;
         }
 
         .links {
@@ -206,23 +151,8 @@ const AboutApp: React.FC = () => {
             background-clip: text;
           }
 
-          .subtitle,
-          .note,
           .footer {
             color: #57606a;
-          }
-
-          .dim {
-            color: #57606a;
-          }
-
-          .highlight {
-            color: #1a7f37;
-            text-shadow: none;
-          }
-
-          .formula sup {
-            color: #1a7f37;
           }
 
           .list li,
@@ -236,11 +166,6 @@ const AboutApp: React.FC = () => {
 
           .text {
             color: #24292f;
-          }
-
-          .text code {
-            color: #1a7f37;
-            background: rgba(26, 127, 55, 0.1);
           }
 
           .links {

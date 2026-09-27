@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
+/* KaTeX 在 Tailwind 之后引入：
+   1) 让 KaTeX 的 .frac-line 等选择器权重压过 preflight 的通配符
+   2) 保留 Tailwind 4 的 layer 体系 */
+@import "katex/dist/katex.min.css";
+
 /* 引用主题文件，让 @apply 能访问自定义颜色 */
 @reference "./theme.css";
 
 body {
-    @apply bg-white text-gray-900 antialiased;
+    @apply bg-gray-100 text-gray-900 antialiased;
     @variant dark {
         @apply bg-gray-950 text-gray-100;
     }
@@ -39,9 +44,9 @@ body {
     }
 }
 .prose pre {
-    @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto mb-6;
+    @apply relative bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto mb-6 border border-brand-500/40;
     @variant dark {
-        @apply bg-gray-800;
+        @apply bg-gray-800 border-brand-500/40;
     }
 }
 .prose pre code {
@@ -69,5 +74,21 @@ body {
     }
 }
 
+/* 代码块复制按钮 */
+.copy-btn {
+    @apply absolute top-2 right-2 z-10 px-2 py-1 text-xs font-medium rounded-md border border-brand-500/50 text-brand-400 bg-gray-900/70 backdrop-blur-sm cursor-pointer select-none opacity-0 transition-opacity duration-200;
+}
+.prose pre:hover .copy-btn,
+.copy-btn:focus-visible {
+    @apply opacity-100;
+}
+.copy-btn:hover,
+.copy-btn.copied {
+    @apply bg-brand-500 border-brand-500 text-white;
+}
 
-
+@media (hover: none) {
+    .copy-btn {
+        @apply opacity-100;
+    }
+}

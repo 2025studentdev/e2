@@ -38,11 +38,57 @@ const fullTitle = `${title} | ${siteName}`;
             href="/rss.xml"
     />
 </head>
-<body class="min-h-screen flex flex-col">
-<Header />
-<main class="flex-1">
-    <slot />
-</main>
-<Footer />
+<body class="min-h-screen sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+<!-- A4 纸：移动端全屏无边框，桌面端近全宽细框 -->
+<div
+        class="mx-auto w-full max-w-[1400px] bg-white dark:bg-gray-900 flex flex-col sm:border sm:border-brand-500/60 sm:shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:sm:shadow-[0_1px_3px_rgba(0,0,0,0.4)] sm:min-h-[calc(100vh-4rem)] lg:min-h-[calc(100vh-5rem)]"
+>
+    <Header />
+    <main class="flex-1">
+        <slot />
+    </main>
+    <Footer />
+</div>
+
+<!-- 代码块复制按钮 -->
+<script>
+    function initCopyButtons() {
+        document
+            .querySelectorAll<HTMLPreElement>('.prose pre')
+            .forEach((pre) => {
+                if (pre.dataset.copyReady) return;
+                pre.dataset.copyReady = '1';
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'copy-btn';
+                btn.textContent = '复制';
+                btn.setAttribute('aria-label', '复制代码');
+
+                btn.addEventListener('click', async () => {
+                    const code =
+                        pre.querySelector('code')?.textContent ??
+                        pre.textContent ??
+                        '';
+                    try {
+                        await navigator.clipboard.writeText(code);
+                        btn.textContent = '已复制';
+                        btn.classList.add('copied');
+                    } catch {
+                        btn.textContent = '失败';
+                    }
+                    window.setTimeout(() => {
+                        btn.textContent = '复制';
+                        btn.classList.remove('copied');
+                    }, 1500);
+                });
+
+                pre.appendChild(btn);
+            });
+    }
+
+    initCopyButtons();
+    document.addEventListener('astro:after-swap', initCopyButtons);
+</script>
 </body>
 </html>
