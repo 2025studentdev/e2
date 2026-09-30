@@ -3,6 +3,55 @@ import Footer from '../components/index-react/Footer.astro';
 import StarGazing from '../components/index-react/StarGazing.tsx';
 import DynamicSchedule from '../components/index-react/DynamicSchedule.tsx';
 import '../styles/global.css';
+
+// ===== 样式常量：以后改一处即可 =====
+const cardClass = [
+    'group flex flex-col items-center justify-center gap-4 rounded-2xl',
+    'border border-[#EDEAE3]/10 bg-[#EDEAE3]/[0.03]',
+    'px-6 py-10 text-center',
+    'shadow-[0_8px_32px_-12px_rgba(0,0,0,0.6)]',
+    'transition-all duration-300',
+    'hover:-translate-y-1 hover:bg-[#EDEAE3]/[0.06] hover:border-[#EDEAE3]/20',
+    'active:scale-[0.98]',
+].join(' ');
+
+const iconClass = [
+    'flex h-12 w-12 items-center justify-center rounded-full',
+    'bg-[#EDEAE3]/[0.08] text-[#EDEAE3]',
+    'transition-all duration-300',
+    'group-hover:scale-110 group-hover:bg-[#EDEAE3] group-hover:text-[#0F0F12]',
+].join(' ');
+
+// ===== 卡片数据：加一项只需要加一行 =====
+const links = [
+    {
+        href: '/games',
+        zh: '小游戏',
+        en: 'GAMES',
+        icon: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    },
+    {
+        href: '/blog',
+        zh: '博客',
+        en: 'BLOG',
+        icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>',
+    },
+    {
+        href: '/docs',
+        zh: '文档',
+        en: 'DOCS',
+        icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    },
+    {
+        href: '/about',
+        zh: '关于',
+        en: 'ABOUT',
+        icon: '<circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/>',
+    },
+];
+
+const pageTitle = 'E2147dev';
+const pageDesc = '学最好的别人，做最好的自己';
 ---
 
 <!DOCTYPE html>
@@ -10,65 +59,59 @@ import '../styles/global.css';
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>e2147dev</title>
+    <title>{pageTitle}</title>
     <link rel="icon" type="image/png" href="/doge.png" />
-</head>
-<body class="min-h-screen flex flex-col overflow-x-hidden bg-[#F4F1EA]">
 
-<section class="min-h-screen flex flex-col items-center justify-center text-center px-4">
-    <h1 class="text-6xl md:text-8xl font-bold tracking-tight text-[#1A1A1A]">E2147dev</h1>
-    <p class="mt-6 text-xl md:text-2xl text-[#1A1A1A]/55 font-light tracking-widest">
-        学最好的别人，做最好的自己
+    <!-- 暗色系主色，移动端浏览器地址栏会跟着变 -->
+    <meta name="theme-color" content="#0F0F12" />
+
+    <!-- SEO -->
+    <meta name="description" content={pageDesc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+</head>
+<body class="min-h-dvh flex flex-col overflow-x-hidden bg-[#0F0F12] text-[#EDEAE3] antialiased">
+
+<section class="min-h-dvh flex flex-col items-center justify-center text-center px-4">
+    <h1 class="text-6xl md:text-8xl font-bold tracking-tight text-[#EDEAE3]">{pageTitle}</h1>
+    <p class="mt-6 text-xl md:text-2xl text-[#EDEAE3]/70 font-light tracking-widest">
+        {pageDesc}
     </p>
 </section>
 
-<section class="min-h-screen flex items-center justify-center px-4 py-20">
+<section class="min-h-dvh flex items-center justify-center px-4 py-20">
     <DynamicSchedule client:load />
 </section>
 
 <section class="flex items-center justify-center px-6 py-24 md:py-32">
     <div class="grid w-full max-w-3xl grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-
-        <a href="/games"
-           class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-[#1A1A1A]/10 bg-white/70 px-6 py-10 text-center shadow-[0_8px_32px_-12px_rgba(26,26,26,0.2)] transition-all duration-300 hover:-translate-y-1 hover:bg-white">
-            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A1A1A]/[0.08] text-[#1A1A1A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1A1A1A] group-hover:text-[#F4F1EA]">
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-            </span>
-            <span class="text-lg font-light tracking-widest text-[#1A1A1A]">小游戏</span>
-            <span class="text-xs tracking-[0.2em] text-[#1A1A1A]/55">GAMES</span>
-        </a>
-
-        <a href="/blog"
-           class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-[#1A1A1A]/10 bg-white/70 px-6 py-10 text-center shadow-[0_8px_32px_-12px_rgba(26,26,26,0.2)] transition-all duration-300 hover:-translate-y-1 hover:bg-white">
-            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A1A1A]/[0.08] text-[#1A1A1A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1A1A1A] group-hover:text-[#F4F1EA]">
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-            </span>
-            <span class="text-lg font-light tracking-widest text-[#1A1A1A]">博客</span>
-            <span class="text-xs tracking-[0.2em] text-[#1A1A1A]/55">BLOG</span>
-        </a>
-
-        <a href="/docs"
-           class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-[#1A1A1A]/10 bg-white/70 px-6 py-10 text-center shadow-[0_8px_32px_-12px_rgba(26,26,26,0.2)] transition-all duration-300 hover:-translate-y-1 hover:bg-white">
-            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A1A1A]/[0.08] text-[#1A1A1A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1A1A1A] group-hover:text-[#F4F1EA]">
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            </span>
-            <span class="text-lg font-light tracking-widest text-[#1A1A1A]">文档</span>
-            <span class="text-xs tracking-[0.2em] text-[#1A1A1A]/55">DOCS</span>
-        </a>
-
-        <a href="/about"
-           class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-[#1A1A1A]/10 bg-white/70 px-6 py-10 text-center shadow-[0_8px_32px_-12px_rgba(26,26,26,0.2)] transition-all duration-300 hover:-translate-y-1 hover:bg-white">
-            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A1A1A]/[0.08] text-[#1A1A1A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1A1A1A] group-hover:text-[#F4F1EA]">
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-            </span>
-            <span class="text-lg font-light tracking-widest text-[#1A1A1A]">关于</span>
-            <span class="text-xs tracking-[0.2em] text-[#1A1A1A]/55">ABOUT</span>
-        </a>
-
+        {links.map(({ href, zh, en, icon }) => (
+                <a href={href} class={cardClass}>
+                <span class={iconClass}>
+                    <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            set:html={icon}
+                    />
+                </span>
+                    <span class="text-lg font-light tracking-widest text-[#EDEAE3]">{zh}</span>
+                    <span class="text-xs tracking-[0.2em] text-[#EDEAE3]/60">{en}</span>
+                </a>
+        ))}
     </div>
 </section>
 
-<section class="h-screen w-full relative">
+<section class="h-dvh w-full relative">
     <StarGazing client:idle />
 </section>
 
