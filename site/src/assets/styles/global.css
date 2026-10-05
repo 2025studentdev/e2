@@ -92,3 +92,36 @@ body {
         @apply opacity-100;
     }
 }
+
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    font-size: 0.875em;
+    line-height: 1.7;
+}
+
+.prose thead th {
+    padding: 0.5em 0.75em;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid currentColor;
+}
+
+.prose tbody td {
+    padding: 0.5em 0.75em;
+    border-bottom: 1px solid;
+    border-color: rgb(0 0 0 / 0.1);
+}
+
+.dark .prose tbody td {
+    border-color: rgb(255 255 255 / 0.15);
+}
+
+.prose h1 {
+    font-size: 2.25em;
+    font-weight: 800;
+    line-height: 1.1111111;
+    margin-top: 0;
+    margin-bottom: 0.8888889em;
+}
