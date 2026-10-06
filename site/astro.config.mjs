@@ -12,6 +12,8 @@ import remarkGfm from 'remark-gfm';
 import remarkDirective from 'remark-directive';
 import { visit } from 'unist-util-visit';
 
+import svelte from '@astrojs/svelte';
+
 /**
  * 把 :::tip / :::warning 这类 directive 转成带 class 的 div
  * @returns {(tree: import('mdast').Root) => void}
@@ -33,7 +35,7 @@ export default defineConfig({
   site: 'https://e-2.top',
   base: '/',
 
-  integrations: [react(), sitemap()],
+  integrations: [react(), sitemap(), svelte()],
 
   vite: {
     plugins: [tailwindcss()],
