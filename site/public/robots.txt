@@ -1,1 +1,4 @@
 Sitemap: https://e-2.top/sitemap-index.xml
+
+User-agent: *
+Allow: /

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>404 · 页面未找到</title>
+    <style>
+        :root{
+            --split: 50%;          /* 斜切位置，由 JS 实时驱动 */
+            --paper: #f4f4f2;
+            --ink:   #0a0a0a;
+        }
+
+        *,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; }
+
+        html,body{ height:100%; }
+
+        body{
+            background: var(--paper);
+            font-family: "Helvetica Neue", Helvetica, Arial,
+            "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            overflow: hidden;
+            cursor: crosshair;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .stage{
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            isolation: isolate;      /* 把混合模式锁在这一层里 */
+        }
+
+        /* ---------- 黑白斜切背景 ---------- */
+        .split{
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(
+                    115deg,
+                    var(--paper) 0%,
+                    var(--paper) var(--split),
+                    var(--ink)   var(--split),
+                    var(--ink)   100%
+            );
+        }
+
+        /* ---------- 内容层：difference 自动反色 ---------- */
+        .content{
+            position: absolute;
+            inset: 0;
+            color: #fff;              /* 关键：白色 + difference = 白底黑字 / 黑底白字 */
+            mix-blend-mode: difference;
+        }
+
+        .center{
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(10px, 2vh, 26px);
+            will-change: transform;
+        }
+
+        .title{
+            font-size: clamp(5rem, 26vw, 22rem);
+            font-weight: 900;
+            line-height: .8;
+            letter-spacing: -.05em;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .sub{
+            font-size: clamp(.58rem, 1.05vw, .78rem);
+            font-weight: 700;
+            letter-spacing: .6em;
+            text-transform: uppercase;
+            opacity: .8;
+        }
+
+        .cn{
+            font-size: clamp(.7rem, 1.35vw, .92rem);
+            letter-spacing: .4em;
+            opacity: .55;
+        }
+
+        .corner{
+            position: absolute;
+            font-size: clamp(.55rem, .95vw, .7rem);
+            font-weight: 600;
+            letter-spacing: .3em;
+            text-transform: uppercase;
+            opacity: .7;
+        }
+
+        .corner.tl{ top: clamp(20px, 4vh, 44px);  left:  clamp(20px, 4vw, 56px); }
+        .corner.br{ bottom: clamp(20px, 4vh, 44px); right: clamp(20px, 4vw, 56px); }
+
+        .back{
+            color: inherit;
+            text-decoration: none;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 5px;
+            letter-spacing: inherit;
+        }
+
+        .back::after{
+            content: "";
+            position: absolute;
+            left: 0; bottom: 0;
+            width: 100%; height: 1px;
+            background: currentColor;
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform .5s cubic-bezier(.22, .8, .25, 1);
+        }
+
+        .back:hover::after{ transform: scaleX(1); }
+
+        @media (prefers-reduced-motion: reduce){
+            .back::after{ transition: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="stage">
+    <div class="split"></div>
+
+    <div class="content">
+        <div class="corner tl">HTTP / 404</div>
+
+        <div class="center">
+            <h1 class="title">404</h1>
+            <p class="sub">Page Not Found</p>
+            <p class="cn">页面不存在或已被移除</p>
+        </div>
+
+        <div class="corner br">
+            <a class="back" href="/">返回首页</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var splitEl = document.querySelector('.split');
+        var center  = document.querySelector('.center');
+
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        var split   = 3;          // 加载时从最左侧扫入
+        var pointerX = 0.5;
+        var hasPointer = false;
+
+        var px = 0, py = 0;       // 视差当前值
+        var tx = 0, ty = 0;       // 视差目标值
+
+        function updatePointer(e) {
+            pointerX = e.clientX / window.innerWidth;
+            hasPointer = true;
+        }
+
+        window.addEventListener('pointermove', updatePointer, { passive: true });
+        window.addEventListener('pointerdown', updatePointer, { passive: true });
+        window.addEventListener('pointerout', function (e) {
+            if (!e.relatedTarget) hasPointer = false;
+        });
+
+        var last = performance.now();
+
+        function frame(now) {
+            var dt = Math.min(now - last, 48);
+            last = now;
+
+            /* ---- 斜切位置 ---- */
+            var base  = hasPointer ? 24 + pointerX * 52 : 50;            // 24% ~ 76%
+            var drift = reduceMotion ? 0 : Math.sin(now * 0.00045) * 2.4; // 闲置时缓慢呼吸
+            var target = base + drift;
+
+            var k = 1 - Math.pow(0.01, dt / 1000);                        // 与帧率无关的缓动
+            split += (target - split) * k;
+
+            splitEl.style.setProperty('--split', split.toFixed(3) + '%');
+
+            /* ---- 文字视差 ---- */
+            if (hasPointer && !reduceMotion) {
+                tx = (pointerX - 0.5) * 26;
+            } else {
+                tx = 0;
+            }
+            ty = 0;
+
+            px += (tx - px) * k * 0.8;
+            py += (ty - py) * k * 0.8;
+
+            center.style.transform =
+                'translate3d(' + px.toFixed(2) + 'px,' + py.toFixed(2) + 'px,0)';
+
+            requestAnimationFrame(frame);
+        }
+
+        requestAnimationFrame(frame);
+    })();
+</script>
+</body>
+</html>
