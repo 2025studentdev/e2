@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典数独</title>
+    <style>
+        :root {
+            --bg-color: #f9f9f9;
+            --board-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #cccccc;
+            --thick-border: #333333;
+            --highlight-color: #eef2ff;
+            --selected-color: #bbdefb;
+            --fixed-num-color: #000000;
+            --user-num-color: #2196f3;
+            --error-color: #ffebee;
+            --btn-primary: #4caf50;
+            --btn-secondary: #2196f3;
+            --btn-text: #ffffff;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            user-select: none; /* 防止双击选中文本 */
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.2s;
+            color: var(--btn-text);
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-new { background-color: var(--btn-primary); }
+        .btn-check { background-color: var(--btn-secondary); }
+        .btn-clear { background-color: #9e9e9e; }
+
+        /* 数独棋盘样式 */
+        #sudoku-board {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            grid-template-rows: repeat(9, 50px);
+            background-color: var(--thick-border);
+            gap: 1px;
+            border: 2px solid var(--thick-border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .cell {
+            background-color: var(--board-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+
+        /* 3x3 宫格粗边框处理 */
+        .cell:nth-child(3n) {
+            border-right: 2px solid var(--thick-border);
+        }
+        .cell:nth-child(9n) {
+            border-right: none; /* 移除最右侧多余边框 */
+        }
+        /* 这里的逻辑需要配合grid gap，我们通过margin来模拟粗线更稳定 */
+        /* 重新调整：使用纯CSS Grid Gap作为细线，特定单元格加边框作为粗线 */
+
+        #sudoku-board {
+            gap: 1px; /* 细线 */
+            background-color: var(--border-color);
+            border: 2px solid var(--thick-border);
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            background-color: var(--board-bg);
+        }
+
+        /* 右侧粗线 (第3列和第6列) */
+        .cell:nth-child(9n+3), .cell:nth-child(9n+6) {
+            border-right: 2px solid var(--thick-border);
+        }
+
+        /* 底部粗线 (第3行和第6行) */
+        /* 由于是Grid布局，我们需要根据索引计算行 */
+        .cell[data-row="2"], .cell[data-row="5"] {
+            border-bottom: 2px solid var(--thick-border);
+        }
+
+        /* 状态样式 */
+        .cell.fixed {
+            color: var(--fixed-num-color);
+            font-weight: bold;
+            pointer-events: none; /* 初始数字不可点 */
+        }
+
+        .cell.user-input {
+            color: var(--user-num-color);
+        }
+
+        .cell.selected {
+            background-color: var(--selected-color) !important;
+        }
+
+        .cell.highlight {
+            background-color: var(--highlight-color);
+        }
+
+        .cell.error {
+            background-color: var(--error-color);
+            color: #d32f2f;
+        }
+
+        /* 数字键盘 (适配移动端或鼠标点击) */
+        .numpad {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .num-btn {
+            width: 45px;
+            height: 45px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .num-btn:hover {
+            background-color: var(--highlight-color);
+        }
+
+        .status-msg {
+            height: 24px;
+            margin-top: 10px;
+            color: var(--btn-primary);
+            font-weight: bold;
+        }
+
+        @media (max-width: 500px) {
+            #sudoku-board {
+                grid-template-columns: repeat(9, 36px);
+                grid-template-rows: repeat(9, 36px);
+            }
+            .cell {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>数独</h1>
+
+<div class="controls">
+    <button class="btn-new" onclick="newGame()">新游戏</button>
+    <button class="btn-check" onclick="checkSolution()">检查</button>
+    <button class="btn-clear" onclick="clearSelected()">清除</button>
+</div>
+
+<div id="sudoku-board"></div>
+
+<div class="status-msg" id="status-msg"></div>
+
+<div class="numpad">
+    <div class="num-btn" onclick="inputNumber(1)">1</div>
+    <div class="num-btn" onclick="inputNumber(2)">2</div>
+    <div class="num-btn" onclick="inputNumber(3)">3</div>
+    <div class="num-btn" onclick="inputNumber(4)">4</div>
+    <div class="num-btn" onclick="inputNumber(5)">5</div>
+    <div class="num-btn" onclick="inputNumber(6)">6</div>
+    <div class="num-btn" onclick="inputNumber(7)">7</div>
+    <div class="num-btn" onclick="inputNumber(8)">8</div>
+    <div class="num-btn" onclick="inputNumber(9)">9</div>
+    <div class="num-btn" onclick="inputNumber(0)">X</div>
+</div>
+
+<script>
+    // 游戏状态
+    let solution = [];
+    let puzzle = [];
+    let selectedCellIndex = -1;
+    const boardElement = document.getElementById('sudoku-board');
+    const statusMsg = document.getElementById('status-msg');
+
+    // 初始化
+    window.onload = newGame;
+
+    // 监听键盘输入
+    document.addEventListener('keydown', (e) => {
+        if (selectedCellIndex === -1) return;
+
+        const key = e.key;
+        if (key >= '1' && key <= '9') {
+            inputNumber(parseInt(key));
+        } else if (key === 'Backspace' || key === 'Delete' || key === '0') {
+            inputNumber(0);
+        } else if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+            moveSelection(key);
+        }
+    });
+
+    function newGame() {
+        // 生成完整数独
+        solution = generateSolvedBoard();
+        // 挖洞生成题目 (简单难度：挖去30-40个数字)
+        puzzle = [...solution];
+        removeNumbers(puzzle, 35);
+
+        renderBoard();
+        statusMsg.textContent = "";
+        selectedCellIndex = -1;
+    }
+
+    function renderBoard() {
+        boardElement.innerHTML = '';
+        puzzle.forEach((num, index) => {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+
+            // 计算行列用于CSS边框
+            const row = Math.floor(index / 9);
+            cell.setAttribute('data-row', row);
+            cell.setAttribute('data-index', index);
+
+            if (num !== 0) {
+                cell.textContent = num;
+                cell.classList.add('fixed');
+            }
+
+            cell.onclick = () => selectCell(index);
+            boardElement.appendChild(cell);
+        });
+    }
+
+    function selectCell(index) {
+        // 如果是固定数字，允许选中（为了高亮相同数字），但不允许修改
+        // 如果只想让用户选空格子，可以取消注释下面这行
+        // if (puzzle[index] !== 0 && isFixed(index)) return;
+
+        selectedCellIndex = index;
+
+        // 更新UI高亮
+        const cells = document.querySelectorAll('.cell');
+        const selectedVal = getCellValue(index);
+
+        cells.forEach((c, i) => {
+            c.classList.remove('selected', 'highlight');
+
+            // 高亮当前选中
+            if (i === index) c.classList.add('selected');
+
+            // 高亮相同数字
+            const val = getCellValue(i);
+            if (val !== 0 && val === selectedVal) {
+                c.classList.add('highlight');
+            }
+
+            // 高亮同行同列同宫 (可选，这里只做简单的相同数字高亮以保持界面干净)
+        });
+    }
+
+    function inputNumber(num) {
+        if (selectedCellIndex === -1) return;
+
+        // 检查是否是初始固定数字
+        // 注意：这里我们简单地通过比较当前值和初始生成逻辑判断，
+        // 或者更简单地：我们在render时给固定数字加了class，这里检查class
+        const cell = boardElement.children[selectedCellIndex];
+        if (cell.classList.contains('fixed')) return;
+
+        if (num === 0) {
+            cell.textContent = '';
+            cell.classList.remove('user-input', 'error');
+        } else {
+            cell.textContent = num;
+            cell.classList.add('user-input');
+            cell.classList.remove('error'); // 输入新数字时清除错误标记
+        }
+
+        // 重新触发选中以更新高亮
+        selectCell(selectedCellIndex);
+    }
+
+    function clearSelected() {
+        inputNumber(0);
+    }
+
+    function checkSolution() {
+        const cells = document.querySelectorAll('.cell');
+        let isComplete = true;
+        let hasError = false;
+
+        cells.forEach((cell, i) => {
+            const val = parseInt(cell.textContent) || 0;
+            cell.classList.remove('error');
+
+            if (val === 0) {
+                isComplete = false;
+            } else if (val !== solution[i]) {
+                cell.classList.add('error');
+                hasError = true;
+            }
+        });
+
+        if (hasError) {
+            statusMsg.style.color = "#d32f2f";
+            statusMsg.textContent = "发现错误，请检查红色标记。";
+        } else if (isComplete) {
+            statusMsg.style.color = "#4caf50";
+            statusMsg.textContent = "恭喜！你成功解开了数独！";
+        } else {
+            statusMsg.style.color = "#2196f3";
+            statusMsg.textContent = "目前填写正确，继续加油！";
+        }
+    }
+
+    function moveSelection(key) {
+        if (selectedCellIndex === -1) return;
+        let row = Math.floor(selectedCellIndex / 9);
+        let col = selectedCellIndex % 9;
+
+        if (key === 'ArrowUp') row = Math.max(0, row - 1);
+        if (key === 'ArrowDown') row = Math.min(8, row + 1);
+        if (key === 'ArrowLeft') col = Math.max(0, col - 1);
+        if (key === 'ArrowRight') col = Math.min(8, col + 1);
+
+        selectCell(row * 9 + col);
+    }
+
+    function getCellValue(index) {
+        const text = boardElement.children[index].textContent;
+        return text ? parseInt(text) : 0;
+    }
+
+    // --- 数独生成算法 ---
+
+    function generateSolvedBoard() {
+        const board = Array(81).fill(0);
+        fillBoard(board);
+        return board;
+    }
+
+    function fillBoard(board) {
+        const emptyIndex = board.indexOf(0);
+        if (emptyIndex === -1) return true; // 已填满
+
+        const row = Math.floor(emptyIndex / 9);
+        const col = emptyIndex % 9;
+        const nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+        for (let num of nums) {
+            if (isValid(board, row, col, num)) {
+                board[emptyIndex] = num;
+                if (fillBoard(board)) return true;
+                board[emptyIndex] = 0; // 回溯
+            }
+        }
+        return false;
+    }
+
+    function isValid(board, row, col, num) {
+        // 检查行
+        for (let x = 0; x < 9; x++) if (board[row * 9 + x] === num) return false;
+        // 检查列
+        for (let y = 0; y < 9; y++) if (board[y * 9 + col] === num) return false;
+        // 检查3x3宫格
+        const startRow = Math.floor(row / 3) * 3;
+        const startCol = Math.floor(col / 3) * 3;
+        for (let y = 0; y < 3; y++) {
+            for (let x = 0; x < 3; x++) {
+                if (board[(startRow + y) * 9 + (startCol + x)] === num) return false;
+            }
+        }
+        return true;
+    }
+
+    function removeNumbers(board, count) {
+        let attempts = count;
+        while (attempts > 0) {
+            const idx = Math.floor(Math.random() * 81);
+            if (board[idx] !== 0) {
+                board[idx] = 0;
+                attempts--;
+            }
+        }
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+</script>
+</body>
+</html>

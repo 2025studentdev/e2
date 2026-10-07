@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>井字棋 - 人机对战</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 420px;
+            padding: 40px 30px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #95a5a6;
+            margin-bottom: 28px;
+        }
+
+        /* 难度选择 */
+        .difficulty-section {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .diff-btn {
+            padding: 7px 20px;
+            border: 2px solid #dfe6e9;
+            background-color: #ffffff;
+            color: #636e72;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .diff-btn:hover {
+            border-color: #4a90d9;
+            color: #4a90d9;
+        }
+
+        .diff-btn.active {
+            background-color: #4a90d9;
+            border-color: #4a90d9;
+            color: #ffffff;
+        }
+
+        /* 计分板 */
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 24px;
+            padding: 14px 0;
+            background-color: #f8f9fb;
+            border-radius: 10px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-bottom: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .score-item.player .score-value {
+            color: #4a90d9;
+        }
+
+        .score-item.computer .score-value {
+            color: #e17055;
+        }
+
+        .score-divider {
+            width: 1px;
+            background-color: #e0e0e0;
+        }
+
+        /* 状态提示 */
+        .status {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            height: 24px;
+            line-height: 24px;
+            color: #2c3e50;
+            transition: color 0.2s;
+        }
+
+        .status.thinking {
+            color: #e17055;
+        }
+
+        .status.win {
+            color: #27ae60;
+        }
+
+        .status.lose {
+            color: #e17055;
+        }
+
+        .status.draw {
+            color: #f39c12;
+        }
+
+        /* 棋盘 */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background-color: #f0f3f7;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.15s, transform 0.1s;
+            position: relative;
+        }
+
+        .cell:hover:not(.taken):not(.disabled) {
+            background-color: #e4eaf2;
+            transform: scale(1.03);
+        }
+
+        .cell.taken, .cell.disabled {
+            cursor: default;
+        }
+
+        .cell svg {
+            width: 50%;
+            height: 50%;
+        }
+
+        /* X 标记 */
+        .cell .mark-x line {
+            stroke: #4a90d9;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        /* O 标记 */
+        .cell .mark-o circle {
+            stroke: #e17055;
+            stroke-width: 7;
+            fill: none;
+            stroke-linecap: round;
+        }
+
+        /* 获胜高亮 */
+        .cell.highlight {
+            background-color: #eafaf1;
+        }
+
+        .cell.highlight .mark-x line {
+            stroke: #27ae60;
+        }
+
+        .cell.highlight .mark-o circle {
+            stroke: #27ae60;
+        }
+
+        /* 落子动画 */
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .cell svg {
+            animation: popIn 0.25s ease-out;
+        }
+
+        /* 按钮 */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #4a90d9;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a7bc8;
+        }
+
+        .btn-secondary {
+            background-color: #f0f3f7;
+            color: #636e72;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+
+        /* 落子顺序提示 */
+        .order-info {
+            text-align: center;
+            font-size: 12px;
+            color: #b2bec3;
+            margin-top: 18px;
+        }
+
+        .order-info span {
+            font-weight: 600;
+        }
+
+        .tag-x {
+            color: #4a90d9;
+        }
+
+        .tag-o {
+            color: #e17055;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>井字棋</h1>
+    <p class="subtitle">人机对战 · 先连三子者胜</p>
+
+    <!-- 难度选择 -->
+    <div class="difficulty-section">
+        <button class="diff-btn" data-level="easy" onclick="setDifficulty('easy')">简单</button>
+        <button class="diff-btn active" data-level="medium" onclick="setDifficulty('medium')">中等</button>
+        <button class="diff-btn" data-level="hard" onclick="setDifficulty('hard')">困难</button>
+    </div>
+
+    <!-- 计分板 -->
+    <div class="scoreboard">
+        <div class="score-item player">
+            <div class="score-label">玩家 (X)</div>
+            <div class="score-value" id="scorePlayer">0</div>
+        </div>
+        <div class="score-divider"></div>
+        <div class="score-item">
+            <div class="score-label">平局</div>
+            <div class="score-value" id="scoreDraw">0</div>
+        </div>
+        <div class="score-divider"></div>
+        <div class="score-item computer">
+            <div class="score-label">电脑 (O)</div>
+            <div class="score-value" id="scoreComputer">0</div>
+        </div>
+    </div>
+
+    <!-- 状态 -->
+    <div class="status" id="status">请你落子</div>
+
+    <!-- 棋盘 -->
+    <div class="board" id="board"></div>
+
+    <!-- 按钮 -->
+    <div class="actions">
+        <button class="btn btn-primary" onclick="resetGame()">重新开始</button>
+        <button class="btn btn-secondary" onclick="resetScore()">清除积分</button>
+    </div>
+
+    <p class="order-info">你执 <span class="tag-x">X</span>，电脑执 <span class="tag-o">O</span></p>
+</div>
+
+<script>
+    // ============== 游戏状态 ==============
+    const HUMAN = 'X';
+    const AI = 'O';
+    let board = Array(9).fill(null);
+    let gameActive = true;
+    let difficulty = 'medium';
+    let scores = { player: 0, computer: 0, draw: 0 };
+
+    const winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
+
+    // ============== 初始化 ==============
+    function init() {
+        const boardEl = document.getElementById('board');
+        boardEl.innerHTML = '';
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.index = i;
+            cell.addEventListener('click', () => handleClick(i));
+            boardEl.appendChild(cell);
+        }
+    }
+
+    // ============== SVG 标记 ==============
+    function createXSvg() {
+        return `<svg class="mark-x" viewBox="0 0 64 64">
+      <line x1="14" y1="14" x2="50" y2="50"/>
+      <line x1="50" y1="14" x2="14" y2="50"/>
+    </svg>`;
+    }
+
+    function createOSvg() {
+        return `<svg class="mark-o" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="20"/>
+    </svg>`;
+    }
+
+    // ============== 玩家落子 ==============
+    function handleClick(index) {
+        if (!gameActive || board[index] !== null) return;
+
+        placeMove(index, HUMAN);
+
+        const result = checkWin(board);
+        if (result) {
+            endGame(result);
+            return;
+        }
+
+        if (board.every(c => c !== null)) {
+            endGame('draw');
+            return;
+        }
+
+        // 电脑思考
+        gameActive = false;
+        setStatus('电脑思考中...', 'thinking');
+        disableCells();
+
+        setTimeout(() => {
+            const aiMove = getBestMove();
+            placeMove(aiMove, AI);
+
+            const result2 = checkWin(board);
+            if (result2) {
+                endGame(result2);
+                return;
+            }
+            if (board.every(c => c !== null)) {
+                endGame('draw');
+                return;
+            }
+
+            gameActive = true;
+            setStatus('请你落子', '');
+            enableCells();
+        }, 350);
+    }
+
+    // ============== 落子渲染 ==============
+    function placeMove(index, player) {
+        board[index] = player;
+        const cell = document.querySelectorAll('.cell')[index];
+        cell.innerHTML = player === HUMAN ? createXSvg() : createOSvg();
+        cell.classList.add('taken');
+    }
+
+    // ============== 胜负判定 ==============
+    function checkWin(b) {
+        for (const pattern of winPatterns) {
+            const [a, c, d] = pattern;
+            if (b[a] && b[a] === b[c] && b[a] === b[d]) {
+                return { winner: b[a], pattern };
+            }
+        }
+        return null;
+    }
+
+    // ============== 游戏结束 ==============
+    function endGame(result) {
+        gameActive = false;
+        disableCells();
+
+        if (result === 'draw') {
+            scores.draw++;
+            setStatus('平局！', 'draw');
+        } else if (result.winner === HUMAN) {
+            scores.player++;
+            setStatus('你赢了！', 'win');
+            highlightWin(result.pattern);
+        } else {
+            scores.computer++;
+            setStatus('电脑赢了！', 'lose');
+            highlightWin(result.pattern);
+        }
+        updateScoreboard();
+    }
+
+    function highlightWin(pattern) {
+        const cells = document.querySelectorAll('.cell');
+        pattern.forEach(i => cells[i].classList.add('highlight'));
+    }
+
+    // ============== AI 逻辑 ==============
+    function getBestMove() {
+        if (difficulty === 'easy') {
+            // 80% 随机，20% 最优
+            if (Math.random() < 0.8) return randomMove();
+            return minimaxMove();
+        } else if (difficulty === 'medium') {
+            // 40% 随机，60% 最优
+            if (Math.random() < 0.4) return randomMove();
+            return minimaxMove();
+        } else {
+            return minimaxMove();
+        }
+    }
+
+    function randomMove() {
+        const available = board.map((v, i) => v === null ? i : null).filter(v => v !== null);
+        return available[Math.floor(Math.random() * available.length)];
+    }
+
+    function minimaxMove() {
+        let bestScore = -Infinity;
+        let bestMove = -1;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === null) {
+                board[i] = AI;
+                const score = minimax(board, 0, false);
+                board[i] = null;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = i;
+                }
+            }
+        }
+        return bestMove;
+    }
+
+    function minimax(b, depth, isMaximizing) {
+        const result = checkWin(b);
+        if (result) {
+            return result.winner === AI ? 10 - depth : depth - 10;
+        }
+        if (b.every(c => c !== null)) return 0;
+
+        if (isMaximizing) {
+            let best = -Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (b[i] === null) {
+                    b[i] = AI;
+                    best = Math.max(best, minimax(b, depth + 1, false));
+                    b[i] = null;
+                }
+            }
+            return best;
+        } else {
+            let best = Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (b[i] === null) {
+                    b[i] = HUMAN;
+                    best = Math.min(best, minimax(b, depth + 1, true));
+                    b[i] = null;
+                }
+            }
+            return best;
+        }
+    }
+
+    // ============== UI 辅助 ==============
+    function setStatus(text, type) {
+        const el = document.getElementById('status');
+        el.textContent = text;
+        el.className = 'status' + (type ? ' ' + type : '');
+    }
+
+    function disableCells() {
+        document.querySelectorAll('.cell').forEach(c => c.classList.add('disabled'));
+    }
+
+    function enableCells() {
+        document.querySelectorAll('.cell').forEach(c => c.classList.remove('disabled'));
+    }
+
+    function updateScoreboard() {
+        document.getElementById('scorePlayer').textContent = scores.player;
+        document.getElementById('scoreComputer').textContent = scores.computer;
+        document.getElementById('scoreDraw').textContent = scores.draw;
+    }
+
+    // ============== 重置 ==============
+    function resetGame() {
+        board = Array(9).fill(null);
+        gameActive = true;
+        init();
+        setStatus('请你落子', '');
+    }
+
+    function resetScore() {
+        scores = { player: 0, computer: 0, draw: 0 };
+        updateScoreboard();
+        resetGame();
+    }
+
+    // ============== 难度切换 ==============
+    function setDifficulty(level) {
+        difficulty = level;
+        document.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.level === level);
+        });
+        resetGame();
+    }
+
+    // 启动
+    init();
+</script>
+</body>
+</html>

@@ -36,6 +36,16 @@ export const games: GameEntry[] = [
         name: '扫雷',
         description: '扫雷游戏',
     },
+    {
+        slug: 'shudo',
+        name: '数独',
+        description: '数独游戏',
+    },
+    {
+        slug: 'Tic-Tac-Toe',
+        name: '井字棋',
+        description: '井字棋游戏',
+    },
 
 ];
 
