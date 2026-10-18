@@ -1,0 +1,407 @@
+/* ===== MBTI 性格测试 · 浅色高级质感 ===== */
+
+.mbti-page {
+    min-height: 100vh;
+    background: #f6f4ef;
+    padding: 48px 20px 80px;
+    box-sizing: border-box;
+}
+
+.mbti-root {
+    --ink: #23272e;
+    --muted: #71767e;
+    --accent: #2f5d50;
+    --accent-deep: #234a3f;
+    --accent-soft: #e9f0ec;
+    --line: #e4e0d6;
+    --surface: #ffffff;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.mbti-card {
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 56px 52px 48px;
+    box-shadow: 0 24px 60px -32px rgba(35, 39, 46, 0.18);
+}
+
+.mbti-stage {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- 通用 ---------- */
+.mbti-eyebrow {
+    margin: 0 0 14px;
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.mbti-title {
+    margin: 0 0 18px;
+    font-family: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+    font-size: 44px;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+}
+
+.mbti-desc {
+    margin: 0 0 26px;
+    color: var(--muted);
+    max-width: 46em;
+}
+
+.mbti-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 34px;
+}
+
+.mbti-meta span {
+    font-size: 13px;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 14px;
+    background: #fbfaf7;
+}
+
+.mbti-hint {
+    margin: 22px 0 0;
+    font-size: 12.5px;
+    color: #a4a89f;
+    text-align: center;
+}
+
+.mbti-btn {
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 12px;
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.mbti-btn:focus-visible,
+.mbti-back:focus-visible,
+.mbti-option:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.mbti-btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 10px 24px -12px rgba(47, 93, 80, 0.55);
+}
+
+.mbti-btn-primary:hover {
+    background: var(--accent-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -12px rgba(47, 93, 80, 0.6);
+}
+
+.mbti-btn-primary:active {
+    transform: translateY(0);
+}
+
+.mbti-btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
+.mbti-btn-ghost:hover {
+    background: var(--accent-soft);
+    transform: translateY(-2px);
+}
+
+/* ---------- 答题区 ---------- */
+.mbti-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.mbti-back {
+    appearance: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--muted);
+    padding: 4px 0;
+    transition: color 0.15s ease;
+}
+
+.mbti-back:hover {
+    color: var(--accent);
+}
+
+.mbti-back-disabled {
+    color: #c9ccc4;
+    cursor: default;
+}
+
+.mbti-counter {
+    font-size: 13.5px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+}
+
+.mbti-counter b {
+    color: var(--ink);
+    font-size: 16px;
+}
+
+.mbti-progress {
+    height: 6px;
+    border-radius: 999px;
+    background: #efece4;
+    overflow: hidden;
+    margin-bottom: 38px;
+}
+
+.mbti-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mbti-qcard.mbti-from-right {
+    animation: mbti-slide-right 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mbti-qcard.mbti-from-left {
+    animation: mbti-slide-left 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mbti-question {
+    margin: 0 0 26px;
+    font-family: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+    font-size: 26px;
+    line-height: 1.45;
+}
+
+.mbti-options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mbti-option {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    cursor: pointer;
+    background: #fdfcf9;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 20px;
+    font-size: 15.5px;
+    color: var(--ink);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+
+.mbti-option:hover {
+    border-color: var(--accent);
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -16px rgba(35, 39, 46, 0.35);
+}
+
+.mbti-option-selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 10px 24px -16px rgba(47, 93, 80, 0.4);
+}
+
+.mbti-key {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    background: #fff;
+    transition: all 0.15s ease;
+}
+
+.mbti-option:hover .mbti-key {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.mbti-option-selected .mbti-key {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.mbti-option-text {
+    flex: 1;
+}
+
+.mbti-check {
+    flex: none;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+/* ---------- 结果页 ---------- */
+.mbti-type {
+    display: flex;
+    gap: 10px;
+    margin: 6px 0 10px;
+}
+
+.mbti-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 66px;
+    height: 82px;
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 40px;
+    font-weight: 700;
+    opacity: 0;
+    animation: mbti-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.mbti-typename {
+    margin: 6px 0 14px;
+    font-family: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+    font-size: 24px;
+}
+
+.mbti-alias {
+    margin-left: 12px;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.mbti-summary {
+    margin: 0 0 18px;
+    color: var(--muted);
+}
+
+.mbti-traits {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 34px;
+}
+
+.mbti-trait {
+    font-size: 13px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 4px 14px;
+    background: #fff;
+}
+
+.mbti-dims {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 34px;
+}
+
+.mbti-dim-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.mbti-strong {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.mbti-track {
+    height: 8px;
+    border-radius: 999px;
+    background: #efece4;
+    overflow: hidden;
+}
+
+.mbti-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mbti-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* ---------- 动画 ---------- */
+@keyframes mbti-fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+}
+
+.mbti-fade-up {
+    animation: mbti-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes mbti-slide-right {
+    from { opacity: 0; transform: translateX(48px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes mbti-slide-left {
+    from { opacity: 0; transform: translateX(-48px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes mbti-pop {
+    from { opacity: 0; transform: translateY(12px) scale(0.94); }
+    to { opacity: 1; transform: none; }
+}
+
+/* ---------- 窄屏适配 ---------- */
+@media (max-width: 640px) {
+    .mbti-page { padding: 24px 12px 48px; }
+    .mbti-card { padding: 36px 24px 32px; border-radius: 16px; }
+    .mbti-title { font-size: 32px; }
+    .mbti-question { font-size: 21px; }
+    .mbti-letter { width: 54px; height: 66px; font-size: 32px; }
+    .mbti-typename { font-size: 20px; }
+}

@@ -1,0 +1,334 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: #f4f1ea;
+}
+
+.pp-root {
+    --pp-paper: #f4f1ea;
+    --pp-surface: #ffffff;
+    --pp-ink: #1d1b17;
+    --pp-muted: #8a8377;
+    --pp-line: #e3ded3;
+    --pp-accent: #b0864a;
+
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding: 56px 24px 72px;
+    background: var(--pp-paper);
+    color: var(--pp-ink);
+    font-family: "Inter", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    -webkit-font-smoothing: antialiased;
+}
+
+.pp-root *,
+.pp-root *::before,
+.pp-root *::after {
+    box-sizing: border-box;
+}
+
+/* ---------- 头部 ---------- */
+
+.pp-header {
+    text-align: center;
+}
+
+.pp-title {
+    margin: 0;
+    font-family: "Songti SC", "STSong", "Georgia", serif;
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-indent: 0.22em;
+    color: var(--pp-ink);
+}
+
+.pp-subtitle {
+    margin: 12px 0 0;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--pp-muted);
+}
+
+/* ---------- 琴体外壳 ---------- */
+
+.pp-shell {
+    width: 100%;
+    max-width: 960px;
+    background: var(--pp-surface);
+    border: 1px solid var(--pp-line);
+    border-radius: 16px;
+    padding: 20px 22px 22px;
+    box-shadow:
+            0 1px 2px rgba(29, 27, 23, 0.04),
+            0 24px 48px -28px rgba(29, 27, 23, 0.32);
+}
+
+/* ---------- 工具栏 ---------- */
+
+.pp-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 0 4px 18px;
+    border-bottom: 1px solid var(--pp-line);
+    margin-bottom: 20px;
+}
+
+.pp-now {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    min-height: 22px;
+}
+
+.pp-now-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--pp-muted);
+    text-transform: uppercase;
+}
+
+.pp-now-name {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    color: var(--pp-ink);
+}
+
+.pp-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.pp-toggle {
+    appearance: none;
+    border: 1px solid var(--pp-line);
+    background: #fff;
+    color: var(--pp-muted);
+    border-radius: 999px;
+    padding: 7px 18px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    font-family: inherit;
+}
+
+.pp-toggle:hover {
+    border-color: #cdc6b8;
+    color: var(--pp-ink);
+}
+
+.pp-toggle[data-on="true"] {
+    background: var(--pp-ink);
+    border-color: var(--pp-ink);
+    color: #fff;
+}
+
+.pp-volume {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.pp-volume-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--pp-muted);
+}
+
+.pp-volume input[type="range"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 96px;
+    height: 3px;
+    border-radius: 2px;
+    background: #ded9cd;
+    outline: none;
+    cursor: pointer;
+}
+
+.pp-volume input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--pp-ink);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.pp-volume input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.pp-volume input[type="range"]::-moz-range-thumb {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--pp-ink);
+    border: none;
+    cursor: pointer;
+}
+
+/* ---------- 键盘 ---------- */
+
+.pp-scroll {
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.pp-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.pp-scroll::-webkit-scrollbar-thumb {
+    background: #ddd8cc;
+    border-radius: 3px;
+}
+
+.pp-keyboard {
+    position: relative;
+    display: flex;
+    height: 236px;
+    min-width: 700px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.pp-key {
+    cursor: pointer;
+}
+
+/* 白键 */
+
+.pp-key-white {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    border-left: 1px solid #e2ddd2;
+    border-bottom: 1px solid #d3ccbe;
+    border-radius: 0 0 7px 7px;
+    background: #ffffff;
+    box-shadow:
+            0 2px 0 #ece7dc,
+            0 4px 7px -4px rgba(29, 27, 23, 0.2);
+    transition: background 0.07s ease, transform 0.07s ease, box-shadow 0.07s ease;
+}
+
+.pp-key-white:last-child {
+    border-right: 1px solid #e2ddd2;
+}
+
+.pp-key-white:hover {
+    background: #fbfaf6;
+}
+
+.pp-key-white.is-active {
+    background: #f3eee3;
+    transform: translateY(2px);
+    box-shadow:
+            0 1px 0 #ece7dc,
+            inset 0 2px 7px rgba(29, 27, 23, 0.08);
+}
+
+/* 黑键 */
+
+.pp-key-black {
+    position: absolute;
+    top: 0;
+    height: 62%;
+    border-radius: 0 0 5px 5px;
+    background: #201e1a;
+    z-index: 2;
+    box-shadow:
+            0 3px 0 #100f0d,
+            0 7px 12px -5px rgba(29, 27, 23, 0.55);
+    transition: background 0.07s ease, transform 0.07s ease, box-shadow 0.07s ease;
+}
+
+.pp-key-black:hover {
+    background: #2c2923;
+}
+
+.pp-key-black.is-active {
+    background: #3a352d;
+    transform: translateY(2px);
+    box-shadow:
+            0 1px 0 #100f0d,
+            0 3px 7px -3px rgba(29, 27, 23, 0.5);
+}
+
+/* 键帽标注 */
+
+.pp-key-label {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    color: #bdb6a8;
+    pointer-events: none;
+}
+
+/* ---------- 底部提示 ---------- */
+
+.pp-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 22px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #a9a196;
+}
+
+.pp-hint-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #d4cec1;
+}
+
+@media (max-width: 720px) {
+    .pp-root {
+        padding: 32px 14px 48px;
+    }
+
+    .pp-title {
+        font-size: 24px;
+    }
+
+    .pp-shell {
+        padding: 16px 14px 18px;
+        border-radius: 12px;
+    }
+
+    .pp-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .pp-keyboard {
+        height: 190px;
+    }
+}

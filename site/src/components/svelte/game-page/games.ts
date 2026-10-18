@@ -61,6 +61,17 @@ export const games: GameEntry[] = [
         name: '排序',
         description: '排序算法可视化',
     },
+    {
+        slug: 'mbti',
+        name: 'MBTI 性格测试',
+        description: 'MBTI 性格测试',
+    },
+    {
+        slug: 'piano',
+        name: '网页钢琴',
+        description: '网页钢琴',
+    },
+
 
 ];
 
