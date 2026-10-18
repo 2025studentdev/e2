@@ -46,6 +46,21 @@ export const games: GameEntry[] = [
         name: '井字棋',
         description: '井字棋游戏',
     },
+    {
+        slug: 'wuziqi',
+        name: '五子棋',
+        description: '五子棋游戏',
+    },
+    {
+        slug: 'break',
+        name: '打砖块',
+        description: '打砖块游戏',
+    },
+    {
+        slug: 'sort',
+        name: '排序',
+        description: '排序算法可视化',
+    },
 
 ];
 

@@ -1,0 +1,19 @@
+---
+import Gomoku from "./_Gomoku.tsx";
+import "./_gomoku.css";
+---
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>五子棋</title>
+    <meta name="description" content="十五路五子棋，本地双人对弈。" />
+</head>
+<body>
+<main class="gk-page">
+    <Gomoku client:only="react" />
+</main>
+</body>
+</html>
