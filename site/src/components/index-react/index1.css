@@ -21,26 +21,26 @@
     place-items: center;
     padding: 0 1.25rem;
     overflow: hidden;
-    background-color: #edeae3;
+    /* 首屏不再自带底色/网格，直接露出 body 的 .grid-bg，保证与下方网格统一 */
+    background-color: transparent;
 }
 
 .hero__slash {
     position: absolute;
     inset: -20% -25%;
     z-index: 0;
-    background-color: #0f0f12;
-    background-image:
-            linear-gradient(to right, rgba(237, 234, 227, 0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(237, 234, 227, 0.05) 1px, transparent 1px);
-    background-size: 56px 56px;
+    /* 白色斜切；网格统一交给 body，斜切上不再叠加自己的网格 */
+    background-color: #edeae3;
+    background-image: none;
     clip-path: polygon(62% 0%, 100% 0%, 100% 100%, 34% 100%);
-    animation: heroDrift 20s ease-in-out infinite alternate;
+    /* 初始在左侧屏外，入场一次后钉死 */
+    transform: translateX(-120%);
+    animation: heroIn 1s cubic-bezier(.22, 1, .36, 1) forwards;
     will-change: transform;
 }
 
-@keyframes heroDrift {
-    from { transform: translate3d(-3.5%, 1.5%, 0) scale(1.02); }
-    to   { transform: translate3d(3.5%, -1.5%, 0) scale(1.02); }
+@keyframes heroIn {
+    to { transform: translateX(0); }
 }
 
 /* ⚠️ 关键：
@@ -324,7 +324,9 @@ html.js [data-reveal].is-visible {
 
 /* ---------- 8. 减少动效偏好 ---------- */
 @media (prefers-reduced-motion: reduce) {
-    .hero__slash { animation: none; }
+    /* 关掉入场动画，并直接落到终点，避免停在屏外 */
+    .hero__slash { animation: none; transform: translateX(0); }
+
     .entry__btn,
     .entry__icon,
     .entry__desc,

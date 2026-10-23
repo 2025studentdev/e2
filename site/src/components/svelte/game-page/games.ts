@@ -71,6 +71,17 @@ export const games: GameEntry[] = [
         name: '网页钢琴',
         description: '网页钢琴',
     },
+    {
+        slug: 'markdown-previewer',
+        name: '在线markdown预览器',
+        description: '在线markdown预览器',
+    },
+    {
+        slug: 'physics-vt',
+        name: '物理运动学计算器',
+        description: '物理运动学计算器',
+    },
+
 
 
 ];

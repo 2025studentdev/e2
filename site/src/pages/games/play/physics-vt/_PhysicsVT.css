@@ -1,0 +1,803 @@
+/* 匀变速直线运动计算器 - 高级样式 */
+
+:root {
+  --primary: #2563eb;
+  --primary-light: #eff6ff;
+  --success: #22c55e;
+  --success-light: #f0fdf4;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --purple: #7c3aed;
+  --purple-light: #fdf4ff;
+  --cyan: #0891b2;
+  --cyan-light: #f0f9ff;
+
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+.physics-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 头部 */
+.physics-header {
+  text-align: center;
+  margin-bottom: 48px;
+  position: relative;
+}
+
+.header-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+
+.physics-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.physics-header .subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.header-line {
+  width: 60px;
+  height: 4px;
+  background: var(--primary);
+  margin: 24px auto 0;
+  border-radius: 2px;
+}
+
+/* 主布局 */
+.physics-main {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 32px;
+  flex: 1;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .physics-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 区块通用 */
+.input-section,
+.result-section {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.section-title .icon {
+  font-size: 1.25rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+}
+
+.section-title h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.badge {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.badge.success {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.hint {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background: var(--primary-light);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--primary);
+  line-height: 1.5;
+}
+
+/* 输入网格 */
+.input-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-group {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.input-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.label-symbol {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  min-width: 24px;
+}
+
+.label-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.label-unit {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  margin-left: auto;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 44px 14px 16px;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  outline: none;
+  transition: all 0.2s ease;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.input-group input:focus {
+  border-color: var(--primary);
+  background: var(--bg-primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.input-group.active .label-symbol {
+  color: var(--primary);
+  transform: scale(1.1);
+}
+
+.input-group.filled input {
+  background: var(--bg-primary);
+  border-color: var(--border);
+}
+
+.label-symbol {
+  transition: all 0.2s ease;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: none;
+  border-radius: 50%;
+  font-size: 1rem;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-btn:hover {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+/* 操作按钮 */
+.action-buttons {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear {
+  background: var(--danger-light);
+  color: var(--danger);
+  width: 100%;
+}
+
+.btn-clear:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+.btn-clear:active {
+  transform: translateY(0);
+}
+
+.example-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.example-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.btn-example {
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  border-radius: 20px;
+}
+
+.btn-example:hover {
+  background: #dbeafe;
+  transform: translateY(-1px);
+}
+
+/* 状态消息 */
+.status-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  font-size: 0.9375rem;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.status-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.status-message.success {
+  background: var(--success-light);
+  color: #166534;
+}
+
+.status-message.success .status-icon {
+  background: var(--success);
+  color: white;
+}
+
+.status-message.warning {
+  background: var(--warning-light);
+  color: #92400e;
+}
+
+.status-message.warning .status-icon {
+  background: var(--warning);
+  color: white;
+}
+
+/* 结果网格 */
+.result-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.result-card {
+  padding: 18px 20px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  transition: all 0.2s ease;
+}
+
+.result-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.result-card.calculated {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.result-card.input-value {
+  background: var(--success-light);
+  border-color: var(--success);
+}
+
+.result-card.empty {
+  opacity: 0.5;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.result-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-symbol {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+}
+
+.result-name {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.calc-badge,
+.input-badge {
+  font-size: 0.6875rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.calc-badge {
+  background: var(--primary);
+  color: white;
+}
+
+.input-badge {
+  background: var(--success);
+  color: white;
+}
+
+.result-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.result-unit {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin-left: 10px;
+}
+
+.copy-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* 使用公式 */
+.formulas-used {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.formulas-used h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.formula-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.formula-tag {
+  padding: 6px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+}
+
+/* 运动分析 */
+.analysis-section {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.analysis-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analysis-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.analysis-label {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.analysis-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.analysis-value.accelerating {
+  color: var(--success);
+}
+
+.analysis-value.decelerating {
+  color: var(--danger);
+}
+
+.analysis-value.constant {
+  color: var(--text-secondary);
+}
+
+/* 比例关系 */
+.ratio-section {
+  background: var(--purple-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #e9d5ff;
+}
+
+.ratio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ratio-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.arrow {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: transform 0.3s ease;
+}
+
+.arrow.up {
+  transform: rotate(180deg);
+}
+
+.ratio-content {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ratio-group h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 10px;
+}
+
+.ratio-table {
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid #e9d5ff;
+}
+
+.ratio-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.ratio-row:last-child {
+  border-bottom: none;
+}
+
+.ratio-row.header {
+  background: var(--bg-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.ratio-row span:first-child {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.ratio-formula {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+}
+
+/* 公式参考 */
+.formula-section {
+  background: var(--cyan-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  border: 1px solid #bae6fd;
+}
+
+.formula-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.formula-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.formula-content {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formula-group h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--cyan);
+  margin-bottom: 10px;
+}
+
+.formula-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formula-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  border: 1px solid #bae6fd;
+}
+
+.formula-tag {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.formula-code {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  background: var(--bg-secondary);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* 页脚 */
+.physics-footer {
+  text-align: center;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.physics-footer p {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+/* 动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-card,
+.analysis-section,
+.ratio-section,
+.formula-section {
+  animation: fadeInUp 0.3s ease forwards;
+}
+
+.result-card:nth-child(1) { animation-delay: 0.05s; }
+.result-card:nth-child(2) { animation-delay: 0.1s; }
+.result-card:nth-child(3) { animation-delay: 0.15s; }
+.result-card:nth-child(4) { animation-delay: 0.2s; }
+.result-card:nth-child(5) { animation-delay: 0.25s; }
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .physics-container {
+    padding: 24px 16px;
+  }
+
+  .physics-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .input-section,
+  .result-section {
+    padding: 20px;
+  }
+
+  .result-value {
+    font-size: 1.5rem;
+  }
+
+  .example-buttons {
+    justify-content: center;
+  }
+}
