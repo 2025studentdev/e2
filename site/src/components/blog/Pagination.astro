@@ -50,19 +50,19 @@ function pageUrl(page: number): string {
 
 {totalPages > 1 && (
 <nav
-        class="flex items-center justify-center gap-1.5 mt-12"
+        class="flex flex-wrap items-center justify-center gap-2 mt-14"
         aria-label="分页导航"
 >
     {prevUrl ? (
             <a
                     href={prevUrl}
-                    class="px-3 py-2 text-sm border border-brand-500 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
+                    class="px-3.5 py-2 text-sm border-2 border-brand-500 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
                     aria-label="上一页"
             >
                 ← 上一页
             </a>
     ) : (
-            <span class="px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed">
+            <span class="px-3.5 py-2 text-sm border-2 border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed">
         ← 上一页
       </span>
     )}
@@ -80,7 +80,7 @@ function pageUrl(page: number): string {
 
         return isCurrent ? (
                 <span
-                        class="px-3 py-2 text-sm bg-brand-500 text-white font-medium"
+                        class="px-3.5 py-2 text-sm bg-brand-500 text-white font-medium"
                         aria-current="page"
                 >
           {item}
@@ -88,7 +88,7 @@ function pageUrl(page: number): string {
         ) : (
                 <a
                         href={pageUrl(item)}
-                        class="px-3 py-2 text-sm border border-brand-500 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
+                        class="px-3.5 py-2 text-sm border-2 border-brand-500 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
                 >
                     {item}
                 </a>
@@ -98,13 +98,13 @@ function pageUrl(page: number): string {
     {nextUrl ? (
             <a
                     href={nextUrl}
-                    class="px-3 py-2 text-sm border border-brand-500 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
+                    class="px-3.5 py-2 text-sm border-2 border-brand-500 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
                     aria-label="下一页"
             >
                 下一页 →
             </a>
     ) : (
-            <span class="px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed">
+            <span class="px-3.5 py-2 text-sm border-2 border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed">
         下一页 →
       </span>
     )}

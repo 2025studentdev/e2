@@ -15,13 +15,13 @@ const { Content } = await render(post);
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
-    <article class="max-w-3xl mx-auto px-4 py-12">
-        <header class="mb-10">
-            <h1 class="text-3xl font-bold tracking-tight mb-3">
+    <article class="relative max-w-3xl mx-auto px-4 py-14 sm:py-16">
+        <header class="mb-12">
+            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
                 {post.data.title}
             </h1>
 
-            <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
                 <time datetime={post.data.pubDate.toISOString()}>
                     {post.data.pubDate.toLocaleDateString('zh-CN', {
                         year: 'numeric',
@@ -43,9 +43,9 @@ const { Content } = await render(post);
             </div>
 
             {post.data.tags.length > 0 && (
-                    <div class="flex gap-2 mt-4">
+                    <div class="flex flex-wrap gap-2 mt-5">
                         {post.data.tags.map((tag) => (
-                                <span class="text-xs px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                                <span class="text-xs px-2 py-0.5 border-2 border-brand-500 text-brand-600 dark:text-brand-400">
               {tag}
             </span>
                         ))}
@@ -57,7 +57,7 @@ const { Content } = await render(post);
             <Content />
         </div>
 
-        <div class="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
+        <div class="mt-16 pt-8 border-t-2 border-gray-200 dark:border-gray-800">
             <a
                     href="/blog"
                     class="text-brand-600 dark:text-brand-400 hover:underline"

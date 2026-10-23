@@ -16,6 +16,27 @@ body {
     font-family: var(--font-sans);
 }
 
+/* 背景网格纹理（容器内装饰层用） */
+.bg-grid {
+    background-image:
+            linear-gradient(to right, rgb(31 204 205 / 0.07) 1px, transparent 1px),
+            linear-gradient(to bottom, rgb(31 204 205 / 0.07) 1px, transparent 1px);
+    background-size: 44px 44px;
+}
+html.dark .bg-grid {
+    background-image:
+            linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+}
+
+/* 背景漂浮的代码符号 */
+.deco {
+    @apply absolute font-mono text-brand-500/15 select-none;
+    @variant dark {
+        @apply text-white/10;
+    }
+}
+
 .prose {
     @apply max-w-none leading-relaxed;
 }

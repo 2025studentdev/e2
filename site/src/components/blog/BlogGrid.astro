@@ -21,20 +21,20 @@ const {
 } = Astro.props;
 ---
 
-<ul class="space-y-5">
+<ul class="grid gap-5 sm:gap-6 md:grid-cols-2">
     {
         posts.map((post) => (
                 <li>
                     <a
                             href={`/blog/${post.id.replace(/\.mdx?$/, '')}/`}
-                            class="group block border border-brand-500 p-5 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
+                            class="group flex h-full flex-col border-2 border-brand-500 p-6 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors"
                     >
-                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                        <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                             {post.data.title}
                         </h2>
                         <time
                                 datetime={post.data.pubDate.toISOString()}
-                                class="text-sm text-gray-500 dark:text-gray-400 mt-1 block"
+                                class="text-sm text-gray-500 dark:text-gray-400 mt-2 block"
                         >
                             {post.data.pubDate.toLocaleDateString('zh-CN', {
                                 year: 'numeric',
@@ -43,14 +43,14 @@ const {
                             })}
                         </time>
                         {post.data.description && (
-                                <p class="text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
+                                <p class="text-gray-600 dark:text-gray-300 mt-3 leading-relaxed flex-1">
                                     {post.data.description}
                                 </p>
                         )}
                         {post.data.tags.length > 0 && (
-                                <div class="flex gap-2 mt-3">
+                                <div class="flex flex-wrap gap-2 mt-4">
                                     {post.data.tags.map((tag) => (
-                                            <span class="text-xs px-2 py-0.5 border border-brand-500 text-brand-600 dark:text-brand-400">
+                                            <span class="text-xs px-2 py-0.5 border-2 border-brand-500 text-brand-600 dark:text-brand-400">
                   {tag}
                 </span>
                                     ))}
