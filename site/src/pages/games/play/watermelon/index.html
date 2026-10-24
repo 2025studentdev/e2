@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>合成大西瓜</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #F1F5F9;
+            color: #0F172A;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+            "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            display: flex;
+            min-height: 100dvh;
+            padding: 16px;
+        }
+
+        .app {
+            margin: auto;
+            width: 100%;
+            max-width: min(420px, calc((100dvh - 190px) * 0.65625));
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            padding-left: 4px;
+            color: #0F172A;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            background: #EF4444;
+            display: inline-block;
+        }
+
+        .hud {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stat {
+            flex: 1;
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 6px 16px rgba(15, 23, 42, 0.05);
+        }
+
+        .stat .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94A3B8;
+            letter-spacing: 0.06em;
+        }
+
+        .stat .value {
+            font-size: 21px;
+            font-weight: 800;
+            color: #0F172A;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .stage {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 420 / 640;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04), 0 16px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        .hint {
+            margin: 0;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94A3B8;
+        }
+
+        /* 游戏结束遮罩 */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.93);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.28s ease;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .over-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #0F172A;
+        }
+
+        .over-score {
+            font-size: 15px;
+            font-weight: 600;
+            color: #64748B;
+            margin-bottom: 14px;
+        }
+
+        .over-score b {
+            color: #0F172A;
+            font-size: 20px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .btn {
+            border: none;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #FFFFFF;
+            background: #1E293B;
+            padding: 13px 36px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .btn:hover { background: #334155; }
+        .btn:active { transform: scale(0.96); }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <div class="title">合成大西瓜</div>
+
+    <div class="hud">
+        <div class="stat">
+            <span class="label">分数</span>
+            <span class="value" id="score">0</span>
+        </div>
+        <div class="stat">
+            <span class="label">最高</span>
+            <span class="value" id="best">0</span>
+        </div>
+    </div>
+
+    <div class="stage" id="stage">
+        <canvas id="cv"></canvas>
+        <div class="overlay" id="overlay">
+            <div class="over-title">游戏结束</div>
+            <div class="over-score">本局得分 <b id="finalScore">0</b></div>
+            <button class="btn" id="restartBtn">再来一局</button>
+        </div>
+    </div>
+
+    <p class="hint">移动鼠标 / 手指瞄准，点击落下</p>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+
+        const { Engine, Bodies, Body, Composite, Events } = Matter;
+
+        /* ---------------- 常量 ---------------- */
+        const W = 420;
+        const H = 640;
+        const DPR = 2;
+        const DANGER_Y = 130;      // 危险线
+        const SPAWN_Y = 78;        // 出生高度
+        const MAX_LEVEL = 10;
+
+        const FRUITS = [
+            { r: 14, fill: '#FB7185', dark: '#E11D48' },
+            { r: 19, fill: '#FB923C', dark: '#EA580C' },
+            { r: 25, fill: '#F59E0B', dark: '#B45309' },
+            { r: 32, fill: '#84CC16', dark: '#4D7C0F' },
+            { r: 40, fill: '#34D399', dark: '#059669' },
+            { r: 49, fill: '#22D3EE', dark: '#0891B2' },
+            { r: 59, fill: '#60A5FA', dark: '#2563EB' },
+            { r: 70, fill: '#A78BFA', dark: '#7C3AED' },
+            { r: 82, fill: '#F472B6', dark: '#DB2777' },
+            { r: 95, fill: '#EF4444', dark: '#B91C1C' }
+        ];
+
+        /* ---------------- DOM ---------------- */
+        const canvas     = document.getElementById('cv');
+        const ctx        = canvas.getContext('2d');
+        const scoreEl    = document.getElementById('score');
+        const bestEl     = document.getElementById('best');
+        const overlay    = document.getElementById('overlay');
+        const finalEl    = document.getElementById('finalScore');
+        const restartBtn = document.getElementById('restartBtn');
+
+        canvas.width  = W * DPR;
+        canvas.height = H * DPR;
+
+        /* ---------------- 物理世界 ---------------- */
+        const engine = Engine.create();
+        engine.gravity.y = 1;
+        engine.positionIterations = 8;
+        engine.velocityIterations = 6;
+
+        const wallOpt = { isStatic: true, label: 'wall', friction: 0.4, restitution: 0.1 };
+        Composite.add(engine.world, [
+            Bodies.rectangle(-25, H / 2, 50, H + 400, wallOpt),
+            Bodies.rectangle(W + 25, H / 2, 50, H + 400, wallOpt),
+            Bodies.rectangle(W / 2, H + 25, W + 200, 50, wallOpt)
+        ]);
+
+        /* ---------------- 状态 ---------------- */
+        let fruits = [];
+        let effects = [];
+        let mergeQueue = [];
+
+        let score = 0;
+        let best = loadBest();
+        let gameOver = false;
+        let overTime = 0;
+
+        let currentLevel = randLevel();
+        let previewX = W / 2;
+        let canDrop = true;
+
+        let acc = 0;
+        let last = 0;
+        const STEP = 1000 / 60;
+
+        /* ---------------- 工具 ---------------- */
+        function randLevel() {
+            return 1 + Math.floor(Math.random() * 4); // 1 ~ 4
+        }
+
+        function loadBest() {
+            try { return parseInt(localStorage.getItem('suika_best') || '0', 10) || 0; }
+            catch (e) { return 0; }
+        }
+
+        function saveBest(v) {
+            try { localStorage.setItem('suika_best', String(v)); } catch (e) {}
+        }
+
+        function easeOutBack(t) {
+            const c1 = 1.70158, c3 = c1 + 1;
+            return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+        }
+
+        function updateHUD() {
+            scoreEl.textContent = score;
+            bestEl.textContent = best;
+        }
+
+        /* ---------------- 水果 ---------------- */
+        function createFruit(level, x, y) {
+            const f = FRUITS[level - 1];
+            const body = Bodies.circle(x, y, f.r, {
+                label: 'fruit',
+                restitution: 0.12,
+                friction: 0.45,
+                frictionStatic: 0.6,
+                frictionAir: 0.003,
+                density: 0.001,
+                slop: 0.03
+            });
+            body.level = level;
+            body.bornAt = performance.now();
+            body.dead = false;
+            Composite.add(engine.world, body);
+            fruits.push(body);
+            return body;
+        }
+
+        function removeFruit(body) {
+            const i = fruits.indexOf(body);
+            if (i >= 0) fruits.splice(i, 1);
+            Composite.remove(engine.world, body);
+        }
+
+        /* ---------------- 合并 ---------------- */
+        Events.on(engine, 'collisionStart', function (ev) {
+            const pairs = ev.pairs;
+            for (let i = 0; i < pairs.length; i++) {
+                const a = pairs[i].bodyA;
+                const b = pairs[i].bodyB;
+                if (a.label !== 'fruit' || b.label !== 'fruit') continue;
+                if (a.dead || b.dead) continue;
+                if (a.level !== b.level) continue;
+                if (a.level >= MAX_LEVEL) continue;
+
+                a.dead = true;
+                b.dead = true;
+                mergeQueue.push([a, b]);
+            }
+        });
+
+        function flushMerges() {
+            while (mergeQueue.length) {
+                const pair = mergeQueue.shift();
+                doMerge(pair[0], pair[1]);
+            }
+        }
+
+        function doMerge(a, b) {
+            const level = a.level;
+            const nx = (a.position.x + b.position.x) / 2;
+            const ny = (a.position.y + b.position.y) / 2;
+            const vx = (a.velocity.x + b.velocity.x) * 0.5;
+            const vy = (a.velocity.y + b.velocity.y) * 0.5;
+
+            removeFruit(a);
+            removeFruit(b);
+
+            const newLevel = level + 1;
+            const nb = createFruit(newLevel, nx, ny);
+            Body.setVelocity(nb, { x: vx * 0.6, y: vy * 0.6 - 0.6 });
+
+            effects.push({
+                x: nx, y: ny,
+                r: FRUITS[newLevel - 1].r,
+                t: performance.now()
+            });
+
+            score += newLevel * 10;
+            if (score > best) best = score;
+            updateHUD();
+        }
+
+        /* ---------------- 落下 ---------------- */
+        function drop() {
+            if (!canDrop || gameOver) return;
+            canDrop = false;
+
+            createFruit(currentLevel, previewX, SPAWN_Y);
+
+            currentLevel = randLevel();
+            const r = FRUITS[currentLevel - 1].r;
+            previewX = Math.max(r + 4, Math.min(W - r - 4, previewX));
+
+            setTimeout(function () { canDrop = true; }, 420);
+        }
+
+        /* ---------------- 输入 ---------------- */
+        function pointerToWorldX(e) {
+            const rect = canvas.getBoundingClientRect();
+            return ((e.clientX - rect.left) / rect.width) * W;
+        }
+
+        canvas.addEventListener('pointermove', function (e) {
+            if (gameOver) return;
+            const r = FRUITS[currentLevel - 1].r;
+            const x = pointerToWorldX(e);
+            previewX = Math.max(r + 4, Math.min(W - r - 4, x));
+        });
+
+        canvas.addEventListener('pointerdown', function (e) {
+            if (gameOver) return;
+            e.preventDefault();
+            const r = FRUITS[currentLevel - 1].r;
+            const x = pointerToWorldX(e);
+            previewX = Math.max(r + 4, Math.min(W - r - 4, x));
+            drop();
+        });
+
+        /* ---------------- 结束判定 ---------------- */
+        function checkGameOver(dt) {
+            if (gameOver) return;
+            const now = performance.now();
+            let danger = false;
+
+            for (let i = 0; i < fruits.length; i++) {
+                const b = fruits[i];
+                if (b.dead) continue;
+                if (now - b.bornAt < 900) continue;
+                const speed = Math.sqrt(b.velocity.x * b.velocity.x + b.velocity.y * b.velocity.y);
+                if (speed > 1.5) continue;
+                if (b.position.y - b.circleRadius < DANGER_Y) { danger = true; break; }
+            }
+
+            if (danger) {
+                overTime += dt;
+                if (overTime >= 1500) endGame();
+            } else {
+                overTime = Math.max(0, overTime - dt * 3);
+            }
+        }
+
+        function endGame() {
+            gameOver = true;
+            if (score > best) { best = score; saveBest(best); }
+            updateHUD();
+            finalEl.textContent = score;
+            overlay.classList.add('show');
+        }
+
+        /* ---------------- 重置 ---------------- */
+        function reset() {
+            for (let i = 0; i < fruits.length; i++) Composite.remove(engine.world, fruits[i]);
+            fruits = [];
+            effects = [];
+            mergeQueue = [];
+
+            score = 0;
+            overTime = 0;
+            gameOver = false;
+            canDrop = true;
+            currentLevel = randLevel();
+            previewX = W / 2;
+
+            updateHUD();
+            overlay.classList.remove('show');
+        }
+
+        restartBtn.addEventListener('click', reset);
+
+        /* ---------------- 绘制 ---------------- */
+        function drawBall(x, y, r, level, scale) {
+            const c = FRUITS[level - 1];
+            const rr = r * scale;
+            if (rr <= 0.5) return;
+            const lw = Math.max(2, rr * 0.055);
+
+            // 主体
+            ctx.save();
+            ctx.shadowColor = 'rgba(15, 23, 42, 0.13)';
+            ctx.shadowBlur = Math.min(18, rr * 0.35);
+            ctx.shadowOffsetY = Math.min(6, rr * 0.12);
+            ctx.beginPath();
+            ctx.arc(x, y, rr, 0, Math.PI * 2);
+            ctx.fillStyle = c.fill;
+            ctx.fill();
+            ctx.restore();
+
+            // 描边
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, Math.max(0.5, rr - lw / 2), 0, Math.PI * 2);
+            ctx.lineWidth = lw;
+            ctx.strokeStyle = c.dark;
+            ctx.stroke();
+            ctx.restore();
+
+            // 数字
+            if (rr >= 9) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+                ctx.font = '800 ' + Math.round(rr * 0.92) + 'px ui-rounded, "SF Pro Rounded", ' +
+                    '"Segoe UI", system-ui, -apple-system, "PingFang SC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(String(level), x, y + rr * 0.03);
+                ctx.restore();
+            }
+        }
+
+        function render(now) {
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            ctx.clearRect(0, 0, W, H);
+
+            // 危险线
+            ctx.save();
+            ctx.beginPath();
+            ctx.setLineDash([10, 10]);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = overTime > 0
+                ? 'rgba(239, 68, 68, 0.55)'
+                : 'rgba(148, 163, 184, 0.32)';
+            ctx.moveTo(14, DANGER_Y);
+            ctx.lineTo(W - 14, DANGER_Y);
+            ctx.stroke();
+            ctx.restore();
+
+            // 投掷引导线
+            if (!gameOver) {
+                const r = FRUITS[currentLevel - 1].r;
+                ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash([4, 10]);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
+                ctx.moveTo(previewX, SPAWN_Y + r + 6);
+                ctx.lineTo(previewX, H - 8);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 合并特效
+            for (let i = effects.length - 1; i >= 0; i--) {
+                const e = effects[i];
+                const t = (now - e.t) / 380;
+                if (t >= 1) { effects.splice(i, 1); continue; }
+                ctx.beginPath();
+                ctx.arc(e.x, e.y, e.r * (1 + t * 0.9), 0, Math.PI * 2);
+                ctx.lineWidth = Math.max(1, 4 * (1 - t));
+                ctx.strokeStyle = 'rgba(148, 163, 184, ' + (0.55 * (1 - t)) + ')';
+                ctx.stroke();
+            }
+
+            // 水果
+            for (let i = 0; i < fruits.length; i++) {
+                const b = fruits[i];
+                if (b.dead) continue;
+                const t = Math.min(1, (now - b.bornAt) / 240);
+                const s = t >= 1 ? 1 : (0.45 + 0.55 * easeOutBack(t));
+                drawBall(b.position.x, b.position.y, b.circleRadius, b.level, s);
+            }
+
+            // 预览水果
+            if (!gameOver) {
+                const r = FRUITS[currentLevel - 1].r;
+                ctx.save();
+                ctx.globalAlpha = canDrop ? 0.95 : 0.3;
+                drawBall(previewX, SPAWN_Y, r, currentLevel, 1);
+                ctx.restore();
+            }
+        }
+
+        /* ---------------- 主循环 ---------------- */
+        function loop(now) {
+            requestAnimationFrame(loop);
+            if (!last) last = now;
+
+            const dt = Math.min(80, now - last);
+            last = now;
+            acc += dt;
+
+            let steps = 0;
+            while (acc >= STEP && steps < 5) {
+                Engine.update(engine, STEP);
+                flushMerges();
+                checkGameOver(STEP);
+                acc -= STEP;
+                steps++;
+            }
+
+            render(now);
+        }
+
+        /* ---------------- 启动 ---------------- */
+        updateHUD();
+        requestAnimationFrame(loop);
+
+    })();
+</script>
+</body>
+</html>
