@@ -1,0 +1,335 @@
+---
+// src/components/Clock.astro
+---
+
+<div class="clock-scene">
+    <canvas data-bg aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <main class="clock-wrap">
+        <div class="label">// SYSTEM_TIME</div>
+
+        <div class="time">
+            <span data-h>00</span><span class="colon">:</span><span data-m>00</span><span class="colon">:</span><span data-s>00</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="date" data-date>加载中…</div>
+    </main>
+</div>
+
+<style>
+    /* ---------- 容器：relative + 至少一屏高，不覆盖页面其他内容 ---------- */
+    .clock-scene {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+        background-color: #04050a;
+        background-image:
+                radial-gradient(circle at 15% 18%, rgba(0, 150, 255, 0.13), transparent 45%),
+                radial-gradient(circle at 85% 78%, rgba(150, 0, 255, 0.13), transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 220, 0.05), transparent 55%);
+        color: #eaf6ff;
+    }
+
+    .clock-scene *,
+    .clock-scene *::before,
+    .clock-scene *::after {
+        box-sizing: border-box;
+    }
+
+    [data-bg] {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .scanlines {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+        opacity: 0.55;
+        background: repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.028) 0 1px,
+                transparent 1px 3px
+        );
+    }
+
+    .clock-wrap {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(12px, 2vw, 20px);
+        padding: clamp(24px, 5vw, 52px) clamp(26px, 7vw, 84px);
+        border-radius: 22px;
+        background: linear-gradient(180deg, rgba(12, 20, 34, 0.55), rgba(8, 12, 22, 0.35));
+        border: 1px solid rgba(110, 190, 255, 0.18);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        animation: breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+        0%, 100% {
+            box-shadow:
+                    0 20px 60px rgba(0, 0, 0, 0.55),
+                    0 0 70px rgba(0, 160, 255, 0.08),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        }
+        50% {
+            box-shadow:
+                    0 20px 60px rgba(0, 0, 0, 0.55),
+                    0 0 120px rgba(0, 190, 255, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        }
+    }
+
+    .label {
+        font-size: clamp(0.55rem, 1.3vw, 0.75rem);
+        letter-spacing: 0.55em;
+        text-indent: 0.55em;
+        color: #4fd1ff;
+        opacity: 0.65;
+        text-shadow: 0 0 12px rgba(0, 200, 255, 0.6);
+    }
+
+    .time {
+        display: flex;
+        align-items: baseline;
+        line-height: 1;
+        font-size: clamp(2.6rem, 10.5vw, 8rem);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+        color: #f2fbff;
+        text-shadow:
+                0 0 10px rgba(90, 200, 255, 0.7),
+                0 0 34px rgba(0, 140, 255, 0.45),
+                0 0 90px rgba(110, 0, 255, 0.35);
+    }
+
+    [data-s] {
+        color: #5ff0d0;
+        text-shadow:
+                0 0 12px rgba(80, 255, 220, 0.85),
+                0 0 42px rgba(0, 220, 200, 0.55);
+    }
+
+    .colon {
+        margin: 0 0.06em;
+        color: #7fd8ff;
+        animation: blink 1s steps(1, end) infinite;
+    }
+
+    @keyframes blink {
+        0%, 49% { opacity: 0.85; }
+        50%, 100% { opacity: 0.18; }
+    }
+
+    .date {
+        font-size: clamp(0.8rem, 2.1vw, 1.35rem);
+        letter-spacing: 0.28em;
+        text-indent: 0.28em;
+        color: #8fd4ff;
+        white-space: nowrap;
+        text-shadow: 0 0 16px rgba(80, 190, 255, 0.6);
+    }
+
+    .divider {
+        width: clamp(120px, 40%, 320px);
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(90, 210, 255, 0.7), transparent);
+        box-shadow: 0 0 12px rgba(90, 210, 255, 0.6);
+    }
+
+    @media (max-width: 480px) {
+        .date { letter-spacing: 0.12em; text-indent: 0.12em; }
+        .label { letter-spacing: 0.35em; text-indent: 0.35em; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .clock-wrap { animation: none; }
+        .colon { animation: none; opacity: 0.7; }
+    }
+</style>
+
+<script>
+    // @ts-nocheck —— 避免 Astro 项目 tsconfig strict 下的隐式 any / null 报错
+    // 如果希望保留类型检查，可以删掉这行并给函数参数补 JSDoc
+
+    const TOKENS = [
+        '</>', '2147483647', '0x7FFF', '0xDEADBEEF', '0b1010', '0xFF', '0x00', '0x1F',
+        'null', 'undefined', 'NaN', 'true', 'false', 'void', 'nullptr',
+        '{ }', '[ ]', '( )', '=>', '++', '--', '&&', '||', '!==', '===', '...',
+        'while(1)', 'for(;;)', 'const', 'let', 'return;', '#include',
+        '<div>', 'fn()', 'print()', 'INT_MAX', 'EOF', '2**31', '01010101',
+        'λ', 'Σ', '∞', 'git push', 'sudo rm', 'async', 'await'
+    ];
+
+    const WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+    const pad = (n) => String(n).padStart(2, '0');
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    /* ==================== 时钟 ==================== */
+    function startClock(root) {
+        const hEl = root.querySelector('[data-h]');
+        const mEl = root.querySelector('[data-m]');
+        const sEl = root.querySelector('[data-s]');
+        const dateEl = root.querySelector('[data-date]');
+        if (!hEl || !mEl || !sEl || !dateEl) return;
+
+        function tick() {
+            const now = new Date();
+
+            hEl.textContent = pad(now.getHours());
+            mEl.textContent = pad(now.getMinutes());
+            sEl.textContent = pad(now.getSeconds());
+
+            dateEl.textContent =
+                now.getFullYear() + '年' +
+                pad(now.getMonth() + 1) + '月' +
+                pad(now.getDate()) + '日  星期' + WEEK[now.getDay()];
+
+            setTimeout(tick, 1000 - (Date.now() % 1000));
+        }
+
+        tick();
+    }
+
+    /* ==================== 粒子 ==================== */
+    class Particle {
+        text = '';
+        size = 0;
+        depth = 0;
+        x = 0;
+        y = 0;
+        vx = 0;
+        vy = 0;
+        alpha = 0;
+        rot = 0;
+        rotSpeed = 0;
+        hue = 0;
+
+        constructor() {
+            this.init(true);
+        }
+
+        init(first) {
+            this.text = TOKENS[(Math.random() * TOKENS.length) | 0];
+            this.size = rand(11, 30);
+            this.depth = this.size / 30;
+            this.x = rand(-120, window.innerWidth + 120);
+            this.y = first ? rand(0, window.innerHeight) : window.innerHeight + rand(20, 150);
+            this.vx = rand(-10, 10);
+            this.vy = -rand(8, 26) * (0.5 + this.depth);
+            this.alpha = rand(0.05, 0.2) * (0.4 + this.depth);
+            this.rot = rand(-0.5, 0.5);
+            this.rotSpeed = rand(-0.25, 0.25);
+            this.hue = Math.random() < 0.62 ? rand(185, 205) : rand(265, 290);
+        }
+    }
+
+    function startBackground(root) {
+        const canvas = root.querySelector('canvas[data-bg]');
+        if (!(canvas instanceof HTMLCanvasElement)) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        let W = 0;
+        let H = 0;
+        let particles = [];
+
+        function resize() {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            W = root.clientWidth;
+            H = root.clientHeight;
+
+            canvas.width = Math.round(W * dpr);
+            canvas.height = Math.round(H * dpr);
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            const count = Math.max(16, Math.min(60, Math.round((W * H) / 38000)));
+            particles = [];
+            for (let i = 0; i < count; i++) particles.push(new Particle());
+        }
+
+        function updateParticle(p, dt) {
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.rot += p.rotSpeed * dt;
+
+            if (p.y < -80 || p.x < -260 || p.x > W + 260) {
+                p.init(false);
+            }
+        }
+
+        function drawParticle(p) {
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.font = p.size + 'px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+            ctx.fillStyle = 'hsl(' + p.hue + ', 100%, 72%)';
+            ctx.shadowColor = 'hsl(' + p.hue + ', 100%, 60%)';
+            ctx.shadowBlur = 14;
+            ctx.fillText(p.text, 0, 0);
+            ctx.restore();
+        }
+
+        let last = performance.now();
+
+        function frame(t) {
+            const dt = Math.min((t - last) / 1000, 0.05);
+            last = t;
+
+            ctx.clearRect(0, 0, W, H);
+
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                updateParticle(p, dt);
+                drawParticle(p);
+            }
+
+            requestAnimationFrame(frame);
+        }
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(resize, 150);
+        });
+
+        resize();
+
+        if (reduced) {
+            for (let i = 0; i < particles.length; i++) drawParticle(particles[i]);
+        } else {
+            requestAnimationFrame(frame);
+        }
+    }
+
+    /* ==================== 初始化（支持多实例） ==================== */
+    document.querySelectorAll('.clock-scene').forEach((root) => {
+        startClock(root);
+        startBackground(root);
+    });
+</script>

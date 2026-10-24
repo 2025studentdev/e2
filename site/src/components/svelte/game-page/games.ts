@@ -81,6 +81,12 @@ export const games: GameEntry[] = [
         name: '物理运动学计算器',
         description: '物理运动学计算器',
     },
+    {
+        slug: 'watermelon',
+        name: '合成大西瓜',
+        description: '合成大西瓜小游戏',
+    },
+
 
 
 
