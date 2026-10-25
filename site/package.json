@@ -17,6 +17,8 @@
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
     "@astrojs/svelte": "^9.1.0",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "@tailwindcss/vite": "^4.3.3",
     "@thesvg/icons": "^3.3.5",
     "@types/react": "^19.3.0",
@@ -32,8 +34,10 @@
     "remark-math": "^6.0.0",
     "svelte": "^5.57.1",
     "tailwindcss": "^4.3.3",
+    "three": "^0.186.1",
     "typescript": "^6.0.3",
-    "unist-util-visit": "^5.1.0"
+    "unist-util-visit": "^5.1.0",
+    "zustand": "^5.0.16"
   },
   "allowScripts": {
     "esbuild": true
@@ -42,6 +46,7 @@
     "@tailwindcss/typography": "^0.5.20",
     "@types/matter-js": "^0.20.2",
     "@types/mdast": "^4.0.4",
+    "@types/three": "^0.186.0",
     "mdast-util-to-hast": "^13.2.1"
   }
 }

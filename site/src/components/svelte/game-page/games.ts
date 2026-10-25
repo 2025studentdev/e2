@@ -86,6 +86,11 @@ export const games: GameEntry[] = [
         name: '合成大西瓜',
         description: '合成大西瓜小游戏',
     },
+    {
+        slug: '3d-t',
+        name: '3D塔防小游戏',
+        description: '3D塔防小游戏',
+    },
 
 
 

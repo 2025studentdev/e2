@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import { sitemapConfig } from './src/config/sitemap-setting.ts'; // ← 新增
 
 import { unified } from '@astrojs/markdown-remark';
 
@@ -35,7 +36,7 @@ export default defineConfig({
   site: 'https://e-2.top',
   base: '/',
 
-  integrations: [react(), sitemap(), svelte()],
+  integrations: [react(), sitemap(sitemapConfig), svelte()], // ← 仅此改动
 
   vite: {
     plugins: [tailwindcss()],
