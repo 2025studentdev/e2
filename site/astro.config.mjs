@@ -3,7 +3,8 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
-import { sitemapConfig } from './src/config/sitemap-setting.ts'; // ← 新增
+import { sitemapConfig } from './src/config/sitemap-setting.ts';
+import { codeSplittingConfig } from './src/config/chunk-big.ts';
 
 import { unified } from '@astrojs/markdown-remark';
 
@@ -36,10 +37,19 @@ export default defineConfig({
   site: 'https://e-2.top',
   base: '/',
 
-  integrations: [react(), sitemap(sitemapConfig), svelte()], // ← 仅此改动
+  integrations: [react(), sitemap(sitemapConfig), svelte()],
 
   vite: {
     plugins: [tailwindcss()],
+
+    build: {
+      rolldownOptions: {
+        output: {
+          // 代码分割分组，配置见 src/config/chunk-big.ts
+          codeSplitting: codeSplittingConfig,
+        },
+      },
+    },
   },
 
   markdown: {
