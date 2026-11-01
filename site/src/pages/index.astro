@@ -49,6 +49,47 @@ const pageDesc = '超越数字世界的边界';
     <Home />
 </main>
 
+<!-- 暗色边界区：滚动字符背景 + 呼吸信号 + 三行主标题 -->
+<section class="beyond" aria-label="超越数字世界的边界">
+    <div class="beyond__field" aria-hidden="true">
+        <div class="beyond__track" style="--y:10%;--d:150s;--t:-20s">
+            <div class="beyond__set"><span>2147483647</span><span>0xFF</span><span>&lt;/&gt;</span><span>0.30000000004</span><span>{ }</span></div>
+            <div class="beyond__set"><span>2147483647</span><span>0xFF</span><span>&lt;/&gt;</span><span>0.30000000004</span><span>{ }</span></div>
+        </div>
+        <div class="beyond__track rev" style="--y:28%;--d:180s;--t:-60s">
+            <div class="beyond__set"><span>1e309</span><span>NaN</span><span>=&gt;</span><span>0b1010</span><span>∞</span></div>
+            <div class="beyond__set"><span>1e309</span><span>NaN</span><span>=&gt;</span><span>0b1010</span><span>∞</span></div>
+        </div>
+        <div class="beyond__track" style="--y:47%;--d:140s;--t:-90s">
+            <div class="beyond__set"><span>0x7FFFFFFF</span><span>[ ]</span><span>::</span><span>-2147483648</span><span>&amp;&amp;</span></div>
+            <div class="beyond__set"><span>0x7FFFFFFF</span><span>[ ]</span><span>::</span><span>-2147483648</span><span>&amp;&amp;</span></div>
+        </div>
+        <div class="beyond__track rev" style="--y:66%;--d:200s;--t:-30s">
+            <div class="beyond__set"><span>2147483647</span><span>0.1+0.2</span><span>&lt;div&gt;</span><span>0o755</span><span>!=</span></div>
+            <div class="beyond__set"><span>2147483647</span><span>0.1+0.2</span><span>&lt;div&gt;</span><span>0o755</span><span>!=</span></div>
+        </div>
+        <div class="beyond__track" style="--y:85%;--d:165s;--t:-110s">
+            <div class="beyond__set"><span>0x00</span><span>|&gt;</span><span>0.30000000004</span><span>2^31-1</span><span>*/</span></div>
+            <div class="beyond__set"><span>0x00</span><span>|&gt;</span><span>0.30000000004</span><span>2^31-1</span><span>*/</span></div>
+        </div>
+    </div>
+
+    <div class="beyond__inner">
+        <div class="beyond__top">
+            <span class="beyond__live"><span class="beyond__dot"></span>SIGNAL</span>
+        </div>
+
+        <div class="beyond__center">
+            <h2 class="beyond__title">
+                <span>超越</span>
+                <span>数字世界</span>
+                <span>的边界</span>
+            </h2>
+            <p class="beyond__en">Beyond the edge of the digital world</p>
+        </div>
+    </div>
+</section>
+
 <Footer />
 
 <!-- 滚动显现：只绑定一次，不依赖任何组件运行时 -->
@@ -79,3 +120,132 @@ const pageDesc = '超越数字世界的边界';
 </script>
 </body>
 </html>
+
+<style>
+    /* ===== 暗色边界区 ===== */
+    .beyond {
+        --beyond-bg: #0F0F12;
+        --beyond-ink: #F2F1EC;
+        --beyond-dim: #8A887E;
+        --beyond-sym: #26262E;
+
+        position: relative;
+        min-height: 100vh;
+        overflow: hidden;
+        background: var(--beyond-bg);
+        color: var(--beyond-ink);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    /* 背景滚动字符层 */
+    .beyond__field {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+        contain: strict;
+    }
+    .beyond__track {
+        position: absolute;
+        left: 0;
+        top: var(--y);
+        display: flex;
+        white-space: nowrap;
+        animation: beyond-slide var(--d) linear infinite;
+        animation-delay: var(--t);
+        will-change: transform;
+    }
+    .beyond__track.rev { animation-direction: reverse; }
+    .beyond__set {
+        display: flex;
+        align-items: baseline;
+    }
+    .beyond__set span {
+        font-size: clamp(2.2rem, 6.4vw, 5rem);
+        font-weight: 700;
+        line-height: 1;
+        color: var(--beyond-sym);
+        margin-right: clamp(2.5rem, 9vw, 9rem);
+        user-select: none;
+    }
+    @keyframes beyond-slide {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+    }
+
+    /* 前景内容 */
+    .beyond__inner {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 68rem;
+        margin: 0 auto;
+        min-height: 100vh;
+        padding: clamp(2rem, 7vh, 4rem) clamp(1.4rem, 7vw, 5rem);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .beyond__top {
+        display: flex;
+        align-items: center;
+        font-size: 10px;
+        letter-spacing: .24em;
+        color: var(--beyond-dim);
+        text-transform: uppercase;
+    }
+    .beyond__live {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .beyond__dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--beyond-ink);
+        animation: beyond-pulse 3s ease-in-out infinite;
+    }
+    @keyframes beyond-pulse {
+        0%, 100% { opacity: 1; }
+        50%      { opacity: .15; }
+    }
+
+    .beyond__center {
+        margin: auto 0;
+    }
+
+    .beyond__title {
+        font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+        font-weight: 700;
+        font-size: clamp(2.6rem, 9vw, 6.2rem);
+        line-height: 1.16;
+        letter-spacing: -.02em;
+        display: flex;
+        flex-direction: column;
+        color: var(--beyond-ink);
+    }
+    .beyond__title span { display: block; }
+
+    .beyond__en {
+        margin-top: clamp(1.6rem, 4vw, 2.4rem);
+        font-size: clamp(9px, 1.4vw, 11px);
+        letter-spacing: .34em;
+        color: var(--beyond-dim);
+        text-transform: uppercase;
+    }
+
+    @media (max-width: 680px) {
+        .beyond__track:nth-child(even) { display: none; }
+        .beyond__set span {
+            font-size: clamp(1.5rem, 8vw, 2.2rem);
+            margin-right: clamp(1.8rem, 10vw, 4rem);
+        }
+        .beyond__top { font-size: 9px; letter-spacing: .18em; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .beyond__track,
+        .beyond__dot { animation: none; }
+    }
+</style>
