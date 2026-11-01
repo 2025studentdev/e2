@@ -1,0 +1,42 @@
+---
+import ClassSleepGame from './_ClassSleepGame.tsx';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>上课摸鱼模拟器</title>
+</head>
+<body>
+<main class="page">
+    <ClassSleepGame client:only="react" />
+</main>
+</body>
+</html>
+
+<style is:global>
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f2eee5;
+        color: #23211d;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 20px;
+    }
+</style>

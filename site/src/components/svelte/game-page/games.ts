@@ -91,6 +91,16 @@ export const games: GameEntry[] = [
         name: '3D塔防小游戏',
         description: '3D塔防小游戏',
     },
+    {
+        slug: 'normal-day',
+        name: '平常的一天',
+        description: '平常的一天小游戏',
+    },
+    {
+        slug: 'class-sleep',
+        name: '上课摸鱼模拟器',
+        description: '上课摸鱼模拟器',
+    },
 
 
 

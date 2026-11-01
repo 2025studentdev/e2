@@ -1,0 +1,390 @@
+/* _class-sleep.css —— 上课摸鱼模拟器 */
+
+.cs-root {
+    --paper: #f2eee5;
+    --wall: #f8f5ee;
+    --floor: #ece5d6;
+    --ink: #23211d;
+    --muted: #8a8377;
+    --line: #ddd6c7;
+    --skin: #e8dcc8;
+    --student-body: #33312c;
+    --teacher-body: #5d7065;
+    --danger: #b34a33;
+    --warn: #c8963c;
+
+    width: 100%;
+    max-width: 900px;
+    color: var(--ink);
+}
+
+.cs-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ---------- HUD ---------- */
+.cs-hud {
+    display: flex;
+    align-items: baseline;
+    gap: 36px;
+    padding: 0 4px;
+}
+
+.cs-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cs-stat--right {
+    margin-left: auto;
+    text-align: right;
+}
+
+.cs-stat__label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.cs-stat__value {
+    font-size: 19px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+    transition: color 0.2s ease;
+}
+
+.cs-stat__value--away {
+    color: var(--muted);
+}
+.cs-stat__value--turning {
+    color: var(--warn);
+}
+.cs-stat__value--watching {
+    color: var(--danger);
+}
+
+/* ---------- 场景 ---------- */
+.cs-stage {
+    position: relative;
+    width: 100%;
+    height: clamp(320px, 52vh, 440px);
+    background: var(--wall);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    user-select: none;
+    touch-action: none;
+    cursor: pointer;
+}
+
+.cs-floor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 30%;
+    background: var(--floor);
+    border-top: 1px solid var(--line);
+}
+
+/* ---------- 黑板 ---------- */
+.cs-blackboard {
+    position: absolute;
+    right: 5%;
+    top: 9%;
+    width: 29%;
+    height: 33%;
+    background: #e7ebe3;
+    border: 1px solid #ccd4c9;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 4px #f3f5f0, 0 2px 0 rgba(70, 60, 45, 0.05);
+}
+
+.cs-chalk {
+    position: absolute;
+    left: 14%;
+    height: 3px;
+    border-radius: 2px;
+    background: #c6cfc2;
+}
+
+/* ---------- 老师 ---------- */
+.cs-teacher {
+    position: absolute;
+    bottom: 30%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    will-change: left;
+}
+
+.cs-teacher__alert {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+    margin-bottom: 9px;
+    background: #dcd5c6;
+    transition: background 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cs-teacher[data-state='turning'] .cs-teacher__alert {
+    background: var(--warn);
+    transform: scaleX(1.4);
+}
+
+.cs-teacher[data-state='watching'] .cs-teacher__alert {
+    background: var(--danger);
+    transform: scaleX(1.8);
+}
+
+.cs-teacher__head {
+    position: relative;
+    z-index: 2;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--skin);
+    border: 1px solid rgba(60, 52, 40, 0.08);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cs-teacher[data-state='turning'] .cs-teacher__head,
+.cs-teacher[data-state='watching'] .cs-teacher__head {
+    transform: translateX(-3px) rotate(-5deg);
+}
+
+.cs-teacher__eyes {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    gap: 9px;
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(9px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+
+.cs-teacher__eyes i {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--ink);
+}
+
+.cs-teacher[data-state='turning'] .cs-teacher__eyes,
+.cs-teacher[data-state='watching'] .cs-teacher__eyes {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateX(-9px);
+}
+
+.cs-teacher__body {
+    width: 62px;
+    height: 80px;
+    margin-top: -6px;
+    border-radius: 26px 26px 6px 6px;
+    background: var(--teacher-body);
+}
+
+/* ---------- 学生 ---------- */
+.cs-student {
+    position: absolute;
+    left: 17%;
+    bottom: 30%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+
+.cs-student__head {
+    position: relative;
+    z-index: 2;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--skin);
+    border: 1px solid rgba(60, 52, 40, 0.08);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cs-student__face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding-left: 9px;
+    padding-top: 3px;
+}
+
+.cs-student__face i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--ink);
+    transition: width 0.2s ease, height 0.2s ease, border-radius 0.2s ease,
+    transform 0.2s ease;
+}
+
+.cs-student[data-sleeping='true'] .cs-student__head {
+    transform: translateY(9px) rotate(-9deg);
+}
+
+.cs-student[data-sleeping='true'] .cs-student__face i {
+    width: 9px;
+    height: 2px;
+    border-radius: 1px;
+    transform: translateY(3px);
+}
+
+.cs-student__body {
+    width: 68px;
+    height: 48px;
+    margin-top: -8px;
+    border-radius: 28px 28px 4px 4px;
+    background: var(--student-body);
+}
+
+/* ---------- 课桌 ---------- */
+.cs-desk {
+    position: absolute;
+    left: 17%;
+    bottom: 22%;
+    transform: translateX(-50%);
+    width: 178px;
+    height: 44px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.cs-desk::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 10px;
+    border-radius: 4px;
+    background: #c9bfa9;
+    box-shadow: 0 1px 0 rgba(60, 52, 40, 0.06);
+}
+
+.cs-desk::after {
+    content: '';
+    position: absolute;
+    left: 9%;
+    right: 9%;
+    top: 10px;
+    bottom: 0;
+    background: #ded6c4;
+    border-radius: 0 0 4px 4px;
+}
+
+/* ---------- 遮罩与卡片 ---------- */
+.cs-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248, 245, 238, 0.9);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: cs-fade 0.22s ease;
+}
+
+@keyframes cs-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.cs-card {
+    width: min(420px, 84%);
+    padding: 30px 28px 28px;
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 14px 44px rgba(70, 60, 45, 0.1);
+}
+
+.cs-tag {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--danger);
+}
+
+.cs-tag--muted {
+    color: var(--muted);
+}
+
+.cs-card h1 {
+    margin: 0 0 12px;
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+}
+
+.cs-card p {
+    margin: 0 0 24px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--muted);
+}
+
+.cs-card p strong {
+    color: var(--ink);
+    font-size: 17px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+}
+
+.cs-btn {
+    appearance: none;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: #fdfbf6;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.cs-btn:hover {
+    background: #3c3931;
+}
+
+.cs-btn:active {
+    transform: scale(0.97);
+}
+
+/* ---------- 底部提示 ---------- */
+.cs-footer {
+    text-align: center;
+}
+
+.cs-hint {
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+}

@@ -2,313 +2,186 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex">
-    <meta name="color-scheme" content="dark">
-    <title>404 · 页面未找到</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>404</title>
     <style>
         :root{
-            --bg:      #09090b;
-            --panel:   #0c0c0f;
-            --border:  rgba(34, 211, 238, .25);
-            --border-hover: rgba(34, 211, 238, .8);
-            --text:    #f4f4f5;
-            --muted:   #a1a1aa;
-            --cyan:    #22d3ee;
-            --cyan-dim: rgba(34, 211, 238, .15);
-            --grid:    rgba(255, 255, 255, .03);
-            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            --bg:#121317;
+            --ink:#f2f1ec;
+            --dim:#8f8d84;
+            --sym:#26272e;
         }
-
-        *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
-
-        html{ -webkit-text-size-adjust:100%; }
-
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html{-webkit-text-size-adjust:100%;}
         body{
-            min-height:100svh;
-            background-color:var(--bg);
-            color:var(--text);
-            font-family:var(--font-sans);
-            display:grid;
-            place-items:center;
-            padding:clamp(16px, 4vw, 48px);
-            overflow:hidden;
-            -webkit-font-smoothing:antialiased;
-        }
-
-        /* 全局网格背景 */
-        body::before{
-            content:"";
-            position:fixed; inset:0;
-            z-index:-1;
-            background-image:
-                    linear-gradient(var(--grid) 1px, transparent 1px),
-                    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-            background-size:32px 32px;
-            pointer-events:none;
-        }
-
-        /* 极简外框 */
-        .container{
-            position:relative;
-            width:100%;
-            max-width:640px;
-            border:1px solid var(--border);
-            background:var(--panel);
-            box-shadow:0 0 40px rgba(0,0,0,.6);
-            padding:clamp(32px, 6vw, 64px);
-            overflow:hidden;
-            animation:fadeIn .6s ease-out both;
-        }
-
-        /* 内容层需要压在背景层之上 */
-        .container > *:not(.watermarks){
-            position:relative;
-            z-index:2;
-        }
-
-        /* --- 水印区域 --- */
-        .watermarks{
-            position:absolute;
-            inset:0;
-            z-index:1;
-            pointer-events:none;
-            user-select:none;
-            font-family:var(--font-mono);
-            overflow:hidden;
-        }
-
-        .wm{
-            position:absolute;
-            color:#fff;
-            white-space:nowrap;
-            line-height:1;
-            letter-spacing:.05em;
-        }
-
-        /* 具体水印定位与视觉参数 */
-        .wm-1 {
-            top: 15%; left: -5%;
-            font-size: clamp(4rem, 12vw, 7rem);
-            font-weight: 900;
-            color: var(--cyan);
-            opacity: .04;
-            transform: rotate(-8deg);
-        }
-
-        .wm-2 {
-            bottom: 8%; left: 5%;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            font-weight: 700;
-            opacity: .05;
-            letter-spacing: .15em;
-        }
-
-        .wm-3 {
-            top: 25%; right: 8%;
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
-            color: var(--cyan);
-            opacity: .08;
-        }
-
-        .wm-4 {
-            bottom: 20%; right: 5%;
-            font-size: clamp(2rem, 6vw, 4rem);
-            font-weight: 800;
-            opacity: .03;
-            transform: rotate(90deg);
-            transform-origin: bottom right;
-        }
-
-        .wm-5 {
-            top: 55%; left: 15%;
-            font-size: clamp(.8rem, 2vw, 1.2rem);
-            opacity: .07;
-            word-break: break-all;
-            white-space: normal;
-            max-width: 150px;
-            line-height: 1.4;
-        }
-
-        .wm-6 {
-            bottom: -2%; right: 25%;
-            font-size: clamp(3rem, 8vw, 5rem);
-            font-weight: 900;
-            opacity: .02;
-        }
-
-        .wm-7 {
-            top: 10%; right: 30%;
-            font-size: clamp(.7rem, 1.5vw, .9rem);
-            color: var(--cyan);
-            opacity: .15;
-            letter-spacing: .3em;
-        }
-
-        /* 顶部角标 */
-        .top-tag{
-            font-family:var(--font-mono);
-            font-size:clamp(.65rem, 1.2vw, .75rem);
-            letter-spacing:.2em;
-            color:var(--muted);
-            margin-bottom:clamp(40px, 8vw, 64px);
+            min-height:100vh;
+            background:var(--bg);
+            color:var(--ink);
+            font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
             display:flex;
-            justify-content:space-between;
+            overflow-x:hidden;
+            -webkit-font-smoothing:antialiased;
+            text-rendering:optimizeLegibility;
+        }
+        ::selection{background:var(--ink);color:var(--bg);}
+
+        .field{
+            position:fixed;
+            inset:0;
+            overflow:hidden;
+            pointer-events:none;
+            z-index:0;
+            contain:strict;
+        }
+        .track{
+            position:absolute;
+            left:0;
+            top:var(--y);
+            display:flex;
+            white-space:nowrap;
+            animation:slide var(--d) linear infinite;
+            animation-delay:var(--t);
+            will-change:transform;
+        }
+        .track.rev{animation-direction:reverse;}
+        .set{display:flex;align-items:baseline;}
+        .set span{
+            font-size:clamp(2.2rem,6.4vw,5rem);
+            font-weight:700;
+            line-height:1;
+            color:var(--sym);
+            margin-right:clamp(2.5rem,9vw,9rem);
+            user-select:none;
+        }
+        @keyframes slide{
+            from{transform:translateX(0);}
+            to{transform:translateX(-50%);}
         }
 
-        /* 中间主内容 */
-        .core{
+        main{
             position:relative;
+            z-index:1;
+            width:100%;
+            max-width:68rem;
+            margin:auto;
+            padding:clamp(2rem,7vh,4rem) clamp(1.4rem,7vw,5rem);
             display:flex;
             flex-direction:column;
-            align-items:flex-start;
+            min-height:100vh;
         }
 
-        .title-wrap{
+        .top{
             display:flex;
+            justify-content:space-between;
             align-items:center;
-            gap:clamp(16px, 3vw, 24px);
+            font-size:10px;
+            letter-spacing:.24em;
+            color:var(--dim);
+            text-transform:uppercase;
+        }
+        .top .live{display:flex;align-items:center;gap:.6rem;}
+        .top .dot{
+            width:5px;height:5px;border-radius:50%;
+            background:var(--ink);
+            animation:pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse{
+            0%,100%{opacity:1;}
+            50%{opacity:.15;}
         }
 
-        /* 青色发光竖线 */
-        .accent-line{
-            width:6px;
-            height:clamp(60px, 12vw, 96px);
-            background:var(--cyan);
-            box-shadow:0 0 16px var(--cyan);
-            flex-shrink:0;
+        h1{
+            margin:auto 0;
+            font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC",sans-serif;
+            font-weight:700;
+            font-size:clamp(2.6rem,9vw,6.2rem);
+            line-height:1.16;
+            letter-spacing:-.02em;
+            display:flex;
+            flex-direction:column;
         }
+        h1 span{display:block;}
 
-        .digit{
-            font-size:clamp(5rem, 18vw, 8rem);
-            font-weight:800;
-            line-height:.85;
-            letter-spacing:-.03em;
-            color:var(--text);
-            user-select:none;
-        }
-
-        .sub{
-            margin-top:clamp(16px, 3vw, 24px);
-            margin-left:calc(6px + clamp(16px, 3vw, 24px));
-            font-family:var(--font-mono);
-            font-size:clamp(.75rem, 1.5vw, .85rem);
-            letter-spacing:.3em;
-            color:var(--cyan);
+        .en{
+            margin-top:clamp(1.6rem,4vw,2.4rem);
+            font-size:clamp(9px,1.4vw,11px);
+            letter-spacing:.34em;
+            color:var(--dim);
             text-transform:uppercase;
         }
 
-        .desc{
-            margin-top:12px;
-            margin-left:calc(6px + clamp(16px, 3vw, 24px));
-            font-size:clamp(.85rem, 1.5vw, .95rem);
-            color:var(--muted);
-            letter-spacing:.05em;
-        }
-
-        /* 装饰符号 >> */
-        .decoration{
-            position:absolute;
-            right:-10px;
-            bottom:-10px;
-            font-family:var(--font-mono);
-            font-size:2rem;
-            color:var(--muted);
-            opacity:.2;
-            user-select:none;
-            pointer-events:none;
-        }
-
-        /* 底部操作区 */
-        .footer{
-            margin-top:clamp(48px, 8vw, 64px);
+        .bottom{
             display:flex;
-            justify-content:flex-end;
+            justify-content:space-between;
+            align-items:flex-end;
+            margin-top:clamp(3rem,8vh,5rem);
+        }
+        .code{
+            font-size:clamp(13px,1.8vw,15px);
+            letter-spacing:.16em;
+        }
+        .year{
+            font-size:10px;
+            letter-spacing:.2em;
+            color:var(--dim);
         }
 
-        .back-btn{
-            display:inline-flex;
-            align-items:center;
-            gap:8px;
-            padding:10px 20px;
-            border:1px solid var(--border);
-            color:var(--text);
-            text-decoration:none;
-            font-family:var(--font-mono);
-            font-size:clamp(.75rem, 1.2vw, .85rem);
-            letter-spacing:.1em;
-            transition:all .3s ease;
-            background:transparent;
-            position:relative;
-            z-index:2;
+        @media (max-width:680px){
+            .track:nth-child(even){display:none;}
+            .set span{
+                font-size:clamp(1.5rem,8vw,2.2rem);
+                margin-right:clamp(1.8rem,10vw,4rem);
+            }
+            .top{font-size:9px;letter-spacing:.18em;}
         }
-
-        .back-btn:hover{
-            border-color:var(--cyan);
-            color:var(--cyan);
-            box-shadow:0 0 15px var(--cyan-dim);
-        }
-
-        .back-btn svg{
-            width:14px; height:14px;
-            transition:transform .3s ease;
-        }
-
-        .back-btn:hover svg{
-            transform:translateX(4px);
-        }
-
-        @keyframes fadeIn{
-            from{ opacity:0; transform:translateY(10px); }
-            to  { opacity:1; transform:translateY(0); }
-        }
-
-        @media (prefers-reduced-motion: reduce){
-            *{ animation:none !important; transition:none !important; }
+        @media (prefers-reduced-motion:reduce){
+            .track,.top .dot{animation:none;}
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- 丰富的水印层 -->
-    <div class="watermarks" aria-hidden="true">
-        <div class="wm wm-1">&lt;/&gt;</div>
-        <div class="wm wm-2">2147483647</div>
-        <div class="wm wm-3">0x7FFF</div>
-        <div class="wm wm-4">0b01010100</div>
-        <div class="wm wm-5">null<br>undefined<br>NaN</div>
-        <div class="wm wm-6">void 0</div>
-        <div class="wm wm-7">FATAL_ERROR</div>
+<div class="field" aria-hidden="true">
+    <div class="track" style="--y:10%;--d:150s;--t:-20s">
+        <div class="set"><span>404</span><span>0x194</span><span>? ? ?</span><span>null</span><span>[ ]</span></div>
+        <div class="set"><span>404</span><span>0x194</span><span>? ? ?</span><span>null</span><span>[ ]</span></div>
     </div>
-
-    <div class="top-tag">
-        <span>HTTP / 404</span>
-        <span>E2147DEV</span>
+    <div class="track rev" style="--y:28%;--d:180s;--t:-60s">
+        <div class="set"><span>NOT FOUND</span><span>∞</span><span>0b0</span><span>&lt;/&gt;</span><span>void</span></div>
+        <div class="set"><span>NOT FOUND</span><span>∞</span><span>0b0</span><span>&lt;/&gt;</span><span>void</span></div>
     </div>
-
-    <div class="core">
-        <div class="title-wrap">
-            <div class="accent-line"></div>
-            <h1 class="digit">404</h1>
-        </div>
-
-        <p class="sub">Page Not Found</p>
-        <p class="desc">页面不存在或已被移除</p>
-
-        <div class="decoration">&gt;&gt;</div>
+    <div class="track" style="--y:47%;--d:140s;--t:-90s">
+        <div class="set"><span>-0</span><span>{ }</span><span>::</span><span>undefined</span><span>??</span></div>
+        <div class="set"><span>-0</span><span>{ }</span><span>::</span><span>undefined</span><span>??</span></div>
     </div>
-
-    <div class="footer">
-        <a class="back-btn" href="/">
-            返回首页
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6"/>
-            </svg>
-        </a>
+    <div class="track rev" style="--y:66%;--d:200s;--t:-30s">
+        <div class="set"><span>0o404</span><span>NaN</span><span>&lt;br&gt;</span><span>=&gt;</span><span>!</span></div>
+        <div class="set"><span>0o404</span><span>NaN</span><span>&lt;br&gt;</span><span>=&gt;</span><span>!</span></div>
+    </div>
+    <div class="track" style="--y:85%;--d:165s;--t:-110s">
+        <div class="set"><span>0x00</span><span>|&gt;</span><span>NaN</span><span>404</span><span>*/</span></div>
+        <div class="set"><span>0x00</span><span>|&gt;</span><span>NaN</span><span>404</span><span>*/</span></div>
     </div>
 </div>
+
+<main>
+    <div class="top">
+        <span class="live"><span class="dot"></span>STATUS</span>
+        <span>404</span>
+    </div>
+
+    <h1>
+        <span>这条路径</span>
+        <span>无法抵达</span>
+        <span>任何页面</span>
+    </h1>
+    <p class="en">The page you seek is not here</p>
+
+    <div class="bottom">
+        <span class="code">// 页面不存在</span>
+        <span class="year">ERROR</span>
+    </div>
+</main>
 
 </body>
 </html>
