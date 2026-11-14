@@ -13,16 +13,16 @@ tags:
 
 在 Linux 系统的日常操作中，我们时常会遇到一些看似符合直觉，但结果却极具破坏性的“雷霆操作”。比如，当你试图利用 `mv` 命令将一个普通文件移动到“黑洞”设备时，系统底层的反馈可能会完全颠覆你的认知。这一切，还要从一段广为流传的极客推文说起：
 
-< 众所周知
-< echo foo 是输出一个 foo
-< echo foo > foo.txt 是把 foo 写到 foo.txt
-< echo foo > /dev/null 是把 foo 丢到黑洞
-<
-< 那假设我用 root 进行了这种雷霆操作
-< echo foo > foo.txt
-< mv foo.txt /dev/null
-<
-< 会发生什么呢？
+> 众所周知
+> echo foo 是输出一个 foo
+> echo foo > foo.txt 是把 foo 写到 foo.txt
+> echo foo > /dev/null 是把 foo 丢到黑洞
+>
+> 那假设我用 root 进行了这种雷霆操作
+> echo foo > foo.txt
+> mv foo.txt /dev/null
+>
+> 会发生什么呢？
 
 这是一个非常经典的运维陷阱。很多人的第一直觉是：既然 `> /dev/null` 可以把数据丢进黑洞，那么用 `mv` 把文件移进去，理应也是将其销毁。然而，事实并非如此。这个操作**不会**把文件丢进“黑洞”删除，而是会用你的普通文件 `foo.txt` **暴力替换**掉 `/dev/null` 这个设备节点。
 
