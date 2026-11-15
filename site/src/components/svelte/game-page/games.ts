@@ -101,6 +101,11 @@ export const games: GameEntry[] = [
         name: '上课摸鱼模拟器',
         description: '上课摸鱼模拟器',
     },
+    {
+        slug: 'color',
+        name: '调色盘',
+        description: '调色盘',
+    },
 
 
 

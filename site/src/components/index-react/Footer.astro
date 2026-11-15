@@ -1,8 +1,14 @@
 ---
 const now = new Date();
-const currentYear = now.getUTCFullYear(); // 与下方构建时间统一用 UTC
+// 中国标准时间 UTC+8（无夏令时，固定偏移）
+const CST_OFFSET_MS = 8 * 60 * 60 * 1000;
+const cst = new Date(now.getTime() + CST_OFFSET_MS);
 const pad = (n: number) => String(n).padStart(2, '0');
-const buildTimeUTC = `UTC ${now.getUTCFullYear()}年${pad(now.getUTCMonth() + 1)}月${pad(now.getUTCDate())}日 ${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
+// 偏移后仍用 getUTC* 读取 = 北京时间
+const currentYear = cst.getUTCFullYear();
+const buildTimeCST = `${cst.getUTCFullYear()}年${pad(cst.getUTCMonth() + 1)}月${pad(cst.getUTCDate())}日 ${pad(cst.getUTCHours())}:${pad(cst.getUTCMinutes())}:${pad(cst.getUTCSeconds())}`;
+// 可选：机器可读的 +08:00 形式
+const isoCST = cst.toISOString().replace('Z', '+08:00');
 ---
 
 <footer class="w-full bg-gray-800 text-gray-400 py-6 px-4 text-center text-sm">
@@ -20,6 +26,18 @@ const buildTimeUTC = `UTC ${now.getUTCFullYear()}年${pad(now.getUTCMonth() + 1)
             </a>
         </p>
         <p>Powered by Astro &amp; React</p>
-        <p>构建时间：{buildTimeUTC}</p>
+        <p>构建时间：<time datetime={isoCST}>{buildTimeCST}（UTC+8）</time></p>
+        <p>
+            <a href="https://status.101229.xyz" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center justify-center gap-1.5 text-green-400 hover:text-green-300 transition-colors"
+               aria-label="服务状态：所有系统运行正常">
+                <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+                     width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                <span>所有系统运行正常</span>
+            </a>
+        </p>
     </div>
 </footer>
