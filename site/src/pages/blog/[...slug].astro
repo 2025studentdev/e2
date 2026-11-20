@@ -5,7 +5,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 export async function getStaticPaths() {
     const posts = await getCollection('blog');
     return posts.map((post) => ({
-        params: { slug: post.id.replace(/\.mdx?$/, '') },
+        // glob loader 默认 id 已不带扩展名，直接用
+        params: { slug: post.id },
         props: { post },
     }));
 }
@@ -15,39 +16,38 @@ const { Content } = await render(post);
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
-    <article class="relative max-w-3xl mx-auto px-4 py-14 sm:py-16">
+    <article class="relative mx-auto max-w-3xl px-4 py-14 sm:py-16">
         <header class="mb-12">
-            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+            <h1 class="mb-4 text-3xl font-bold tracking-tight text-[var(--fg)] sm:text-4xl">
                 {post.data.title}
             </h1>
 
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-[var(--fg-muted)]">
                 <time datetime={post.data.pubDate.toISOString()}>
                     {post.data.pubDate.toLocaleDateString('zh-CN', {
                         year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
                     })}
                 </time>
 
                 {post.data.updatedDate && (
                         <span>
-            更新于{' '}
-                            {post.data.updatedDate.toLocaleDateString('zh-CN', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                            })}
-          </span>
+                        更新于 {post.data.updatedDate.toLocaleDateString('zh-CN', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                        })}
+                    </span>
                 )}
             </div>
 
             {post.data.tags.length > 0 && (
-                    <div class="flex flex-wrap gap-2 mt-5">
+                    <div class="mt-5 flex flex-wrap gap-2">
                         {post.data.tags.map((tag) => (
-                                <span class="text-xs px-2 py-0.5 border-2 border-brand-500 text-brand-600 dark:text-brand-400">
-              {tag}
-            </span>
+                                <span class="rounded bg-brand-500/10 px-2 py-0.5 font-mono text-[11px] font-medium text-brand-600 dark:text-brand-400">
+                            {tag}
+                        </span>
                         ))}
                     </div>
             )}
@@ -57,11 +57,8 @@ const { Content } = await render(post);
             <Content />
         </div>
 
-        <div class="mt-16 pt-8 border-t-2 border-gray-200 dark:border-gray-800">
-            <a
-                    href="/blog"
-                    class="text-brand-600 dark:text-brand-400 hover:underline"
-            >
+        <div class="mt-16 border-t border-[var(--divider)] pt-8">
+            <a href="/blog" class="font-mono text-sm text-[var(--fg-muted)] hover:text-brand-500 transition-colors">
                 ← 返回文章列表
             </a>
         </div>

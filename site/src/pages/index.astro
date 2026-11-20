@@ -1,7 +1,7 @@
 ---
 // /src/pages/index.astro
 // 页面壳：SEO、首屏、Footer、滚动 reveal 脚本。
-// 主内容全部交给 <Home />，本文件不写业务样式。
+// beyond 区的样式在本文件 <style> 中，其余业务样式在组件内。
 
 import Footer from '../components/index-react/Footer.astro';
 import Home from '../components/index-v2-svelte/Home.svelte';
@@ -13,13 +13,13 @@ const pageDesc = '超越数字世界的边界';
 ---
 
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth no-js">
+<html lang="zh-CN" class="no-js">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{pageTitle}</title>
     <link rel="icon" type="image/png" href="/doge.png" />
-    <meta name="theme-color" content="#0F0F12" />
+    <meta name="theme-color" content="#F5F3EE" />
 
     <meta name="description" content={pageDesc} />
     <meta property="og:type" content="website" />
@@ -36,7 +36,7 @@ const pageDesc = '超越数字世界的边界';
 <body>
 <a class="skip-link" href="#main">跳到主内容</a>
 
-<!-- 首屏：黑白斜切（保留原设计的招牌动效） -->
+<!-- 首屏：黑白斜切（纯静态，无入场动画，零闪烁） -->
 <section class="hero" aria-label="首屏">
     <div class="hero__slash" aria-hidden="true"></div>
     <div class="hero__content">
@@ -49,7 +49,7 @@ const pageDesc = '超越数字世界的边界';
     <Home />
 </main>
 
-<!-- 暗色边界区：滚动字符背景 + 呼吸信号 + 三行主标题 -->
+<!-- 暗色边界区：滚动字符背景 + 呼吸信号 + 三行主标题（完整保留） -->
 <section class="beyond" aria-label="超越数字世界的边界">
     <div class="beyond__field" aria-hidden="true">
         <div class="beyond__track" style="--y:10%;--d:150s;--t:-20s">
@@ -122,12 +122,12 @@ const pageDesc = '超越数字世界的边界';
 </html>
 
 <style>
-    /* ===== 暗色边界区 ===== */
+    /* ===== 暗色边界区（完整保留原设计） ===== */
     .beyond {
-        --beyond-bg: #0F0F12;
+        --beyond-bg: #141416;
         --beyond-ink: #F2F1EC;
         --beyond-dim: #8A887E;
-        --beyond-sym: #26262E;
+        --beyond-sym: #2A2A32;
 
         position: relative;
         min-height: 100vh;
@@ -154,7 +154,6 @@ const pageDesc = '超越数字世界的边界';
         white-space: nowrap;
         animation: beyond-slide var(--d) linear infinite;
         animation-delay: var(--t);
-        will-change: transform;
     }
     .beyond__track.rev { animation-direction: reverse; }
     .beyond__set {

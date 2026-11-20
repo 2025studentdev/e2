@@ -4,7 +4,6 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import BlogGrid from '../../../components/blog/BlogGrid.astro';
 import { PAGE_SIZE } from '../../../config/pagination';
 
-
 export async function getStaticPaths() {
     const allPosts = (await getCollection('blog'))
         .filter((post) => !post.data.draft)
@@ -12,7 +11,6 @@ export async function getStaticPaths() {
 
     const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
 
-    // 第 1 页由 index.astro 处理，这里只生成第 2 到第 N 页
     return Array.from({ length: totalPages - 1 }, (_, i) => ({
         params: { page: String(i + 2) },
     }));
@@ -28,22 +26,20 @@ const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
 const start = (currentPage - 1) * PAGE_SIZE;
 const posts = allPosts.slice(start, start + PAGE_SIZE);
 
-const prevUrl =
-    currentPage === 2 ? '/blog' : `/blog/page/${currentPage - 1}`;
-const nextUrl =
-    currentPage < totalPages ? `/blog/page/${currentPage + 1}` : null;
+const prevUrl = currentPage === 2 ? '/blog' : `/blog/page/${currentPage - 1}`;
+const nextUrl = currentPage < totalPages ? `/blog/page/${currentPage + 1}` : null;
 ---
 
 <BaseLayout
         title={`博客 - 第 ${currentPage} 页`}
         description={`博客文章列表第 ${currentPage} 页`}
 >
-    <section class="relative max-w-5xl mx-auto px-4 py-14 sm:py-16">
-        <h1 class="text-4xl font-bold mb-3 flex items-center gap-3">
-            <span class="inline-block w-1.5 h-9 bg-brand-500"></span>
+    <section class="relative mx-auto max-w-5xl px-4 py-14 sm:py-16">
+        <h1 class="mb-3 flex items-center gap-3 text-3xl font-bold tracking-tight text-[var(--fg)] sm:text-4xl">
+            <span aria-hidden="true" class="inline-block h-6 w-[3px] rounded-full bg-brand-500 sm:h-8"></span>
             博客
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 mb-10">
+        <p class="mb-10 font-mono text-sm text-[var(--fg-muted)]">
             第 {currentPage} 页 / 共 {totalPages} 页
         </p>
 

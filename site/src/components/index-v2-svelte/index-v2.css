@@ -6,17 +6,24 @@
 
 /* ---------- 0. Design tokens ---------- */
 :root {
-    --bg: #0f0f12;
-    --ink: #edeae3;
-    --ink-dim: rgba(237, 234, 227, 0.62);
-    --ink-mute: rgba(237, 234, 227, 0.42);
-    --ink-faint: rgba(237, 234, 227, 0.12);
-    --line: rgba(237, 234, 227, 0.08);
-    --line-strong: rgba(237, 234, 227, 0.18);
-    --line-hover: rgba(237, 234, 227, 0.32);
+    --bg: #F5F3EE;
+    --bg-elev: #EDEAE3;
+    --ink: #1A1917;
+    --ink-dim: rgba(26, 25, 23, 0.62);
+    --ink-mute: rgba(26, 25, 23, 0.42);
+    --ink-faint: rgba(26, 25, 23, 0.12);
+    --line: rgba(26, 25, 23, 0.10);
+    --line-strong: rgba(26, 25, 23, 0.20);
+    --line-hover: rgba(26, 25, 23, 0.36);
+
+    /* beyond 区保留深色 */
+    --beyond-bg: #141416;
+    --beyond-ink: #F2F1EC;
+    --beyond-dim: #8A887E;
+    --beyond-sym: #2A2A32;
 }
 
-/* ---------- 1. 基础：深底 + 网格 ---------- */
+/* ---------- 1. 基础 ---------- */
 html {
     background-color: var(--bg);
 }
@@ -25,10 +32,6 @@ body {
     min-height: 100dvh;
     color: var(--ink);
     background-color: var(--bg);
-    background-image:
-            linear-gradient(to right, rgba(237, 234, 227, 0.04) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(237, 234, 227, 0.04) 1px, transparent 1px);
-    background-size: 56px 56px;
     font-family:
             -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
             'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
@@ -71,7 +74,7 @@ body {
     border: 0;
 }
 
-/* ---------- 4. 首屏：黑白斜切 ---------- */
+/* ---------- 4. 首屏：黑白斜切（静态，无入场动画，零闪烁） ---------- */
 .hero {
     position: relative;
     isolation: isolate;
@@ -80,27 +83,19 @@ body {
     place-items: center;
     padding: 0 1.25rem;
     overflow: hidden;
-    background: transparent;
+    background: var(--bg);
 }
 
-/* 斜切：入场动画一次，之后固定 */
+/* 斜切：纯静态，不做位移动画，避免首屏闪烁和合成层开销 */
 .hero__slash {
     position: absolute;
-    inset: -20% -25%;
+    inset: 0;
     z-index: 0;
     background: var(--ink);
     clip-path: polygon(62% 0%, 100% 0%, 100% 100%, 34% 100%);
-    transform: translateX(-120%);
-    animation: heroIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    will-change: transform;
-}
-@keyframes heroIn {
-    to {
-        transform: translateX(0);
-    }
 }
 
-/* 关键：blend 挂在内容容器上，内部 h1/p 不创建层叠上下文 */
+/* blend 挂在内容容器上，内部 h1/p 不创建层叠上下文 */
 .hero__content {
     position: relative;
     z-index: 1;
@@ -154,7 +149,7 @@ body {
 .eyebrow__no {
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.18em;
-    color: rgba(237, 234, 227, 0.32);
+    color: rgba(26, 25, 23, 0.32);
     padding-right: 0.75rem;
     border-right: 1px solid var(--ink-faint);
 }
@@ -191,10 +186,6 @@ html.js [data-reveal].is-visible {
 
 /* ---------- 7. 减少动效 ---------- */
 @media (prefers-reduced-motion: reduce) {
-    .hero__slash {
-        animation: none;
-        transform: translateX(0);
-    }
     html.js [data-reveal] {
         opacity: 1;
         transform: none;

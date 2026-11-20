@@ -314,3 +314,212 @@ npm run dev      # 开发服务器
 npm run build    # 构建到 dist/
 npm run preview  # 预览构建产物
 ```
+
+
+#V2
+# e2147dev Blog
+
+基于 **Astro 7 + Tailwind CSS 4** 的个人技术博客。极简、克制、重阅读体验，纯 CSS 优先，尽量少用运行时 JS。
+
+- 站点：https://e-2.top
+- 风格：暖白底 + 深炭灰暗色，品牌色 `#1FCCCD` 仅用于强调
+- 字体：正文 Inter，日期/标签/代码/UI 辅助元素 JetBrains Mono
+
+---
+
+## 技术栈
+
+| 层 | 选型 |
+|---|---|
+| 框架 | Astro 7（Content Collections + `glob` loader） |
+| 样式 | Tailwind CSS 4（CSS-first，无 `tailwind.config.js`）+ `@tailwindcss/typography` |
+| Markdown | unified 管线（`@astrojs/markdown-remark`），保留 remark/rehype 生态 |
+| 高亮 | Shiki，`github-light` / `github-dark` 双主题 |
+| 数学 | remark-math + rehype-katex |
+| 字体 | `@fontsource-variable/inter`、`@fontsource-variable/jetbrains-mono`（本地托管） |
+| 集成 | React、Svelte、Sitemap |
+
+---
+
+## 目录结构
+
+```
+src/
+├── assets/styles/
+│   ├── theme.css        # 设计令牌：品牌色、字体栈、亮/暗色 CSS 变量
+│   └── global.css       # 唯一 Tailwind 入口 + .prose 全量样式
+├── components/blog/
+│   ├── Header.astro     # 导航 + 主题切换
+│   ├── Footer.astro
+│   ├── BlogGrid.astro   # 卡片列表
+│   └── Pagination.astro
+├── config/
+│   ├── pagination.ts    # PAGE_SIZE
+│   ├── sitemap-setting.ts
+│   └── chunk-big.ts     # 代码分割分组
+├── content/
+│   ├── blog/            # Markdown / MDX 文章
+│   └── docs/
+├── content.config.ts    # 集合定义（glob loader + Zod schema）
+├── layouts/BaseLayout.astro
+└── pages/blog/
+├── index.astro
+├── [page].astro
+└── [...slug].astro
+```
+
+---
+
+## 设计规范
+
+### 配色
+
+| 令牌 | 亮色 | 暗色 |
+|---|---|---|
+| `--bg` 页面底 | `#F8F9FA` | `#0F1115` |
+| `--surface` 卡片 | `#FFFFFF` | `#161B22` |
+| `--fg` 正文 | `#111827` | `#E6EDF3` |
+| `--fg-muted` 次要 | `#6B7280` | `#8B949E` |
+| `--divider` 分割线 | `#E5E7EB` | `rgba(255,255,255,0.08)` |
+| `--code-bg` 代码块 | `#F6F8FA` | `#161B22` |
+| `--code-fg` 代码字 | `#24292F` | `#C9D1D9` |
+| 品牌色 | `#1FCCCD`（hover / 选中 / 标签 / 指示线，不大面积使用） | |
+
+### 字体
+
+- `--font-sans`：`Inter Variable` → system-ui → 中文回退
+- `--font-mono`：`JetBrains Mono Variable` → ui-monospace → Consolas
+
+> fontsource variable 包的字体名带 **`Variable` 后缀**，`theme.css` 中必须写在最前，否则 fallback。
+
+### 视觉原则
+
+- 无网格背景、无装饰符号
+- 卡片/区块**无全包围边框**，靠 `gap` 与极细分割线区分
+- 分割线一律 1px `--divider`
+- 品牌色仅出现在：hover 文字、`::selection`、标签底、左侧 3px 指示线、引用块左边线
+
+---
+
+## 关键实现
+
+### 1. Markdown 管线（`astro.config.mjs`）
+
+Astro 7 默认改用 Sätteri，本项目**显式保留 unified 管线**，因此需要 `package.json` 中声明 `@astrojs/markdown-remark` 为依赖，否则 CI 构建失败。
+
+三个自定义 rehype 插件在构建期完成结构包装，运行时零 JS 成本：
+
+| 插件 | 作用 | 目的 |
+|---|---|---|
+| `rehypeWrapCodeBlock` | `<pre>` → `<div class="code-block"><pre>` | Copy 按钮钉在 wrapper 上，横向滚动不错位 |
+| `rehypeFigure` | 单图 `<p>` → `<figure><img><figcaption>alt</figcaption></figure>` | 用 alt 做图注，纯 CSS 无法实现 |
+| `rehypeWrapTable` | `<table>` → `<div class="table-wrap">` | 移动端表格横向滚动 |
+
+`remarkContainers` 把 `:::tip` / `:::warning` 转成 `<div class="callout callout-tip">`。
+
+插件顺序：`rehypeKatex` 先处理公式，再包结构。
+
+### 2. 代码块
+
+**结构决定定位**：Copy 按钮挂在 `.code-block`（`position: relative`），而不是 `pre`（`overflow-x: auto`），所以横向滚动时按钮纹丝不动。
+
+```html
+<div class="code-block">
+  <pre><code>...</code></pre>
+  <button class="copy-btn">复制</button>
+</div>
+```
+
+**双主题**：`shikiConfig.defaultColor: false` 关闭内联颜色，亮/暗全部由 CSS 变量驱动：
+
+```css
+html.dark .prose .astro-code,
+html.dark .prose .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+```
+
+**交互**：平时 `opacity: 0`，hover 代码块或 `:focus-visible` 时显现；点击变绿，1.5s 后复位；`@media (hover: none)` 下常显。
+
+### 3. `.prose` 样式
+
+- `@plugin "@tailwindcss/typography"` 打底，覆盖全部标准元素（h1–h6、figure、dl、details、task list 等）
+- 通过 `--tw-prose-*` 变量映射到自定义色板
+- 局部极客风覆盖：
+   - **UL**：默认圆点换成 6×2px 短横线
+   - **OL**：`counter` + JetBrains Mono 数字
+   - **blockquote**：无边框，左侧 3px `#1FCCCD` + 极淡青底
+   - **table**：无外边框，仅行间 1px 底边，表头极淡灰底
+   - **hr**：渐变隐没细线
+   - **img**：居中、8px 圆角、微弱阴影
+   - **a**：1px 下划线，hover 时下划线变 `#1FCCCD`
+   - **`::selection`**：背景 `#1FCCCD`，文字纯黑
+
+### 4. 卡片列表
+
+- 无边框，`gap` 留白
+- hover：`translateY(-2px)` + 左侧 3px 品牌色竖线浮现 + 标题变 `#1FCCCD`
+- 标签：`bg-brand-500/10` + `text-brand-600`、等宽字体、微圆角、无边框
+
+### 5. 内容集合
+
+```ts
+// src/content.config.ts
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+    heroImage: z.string().optional(),
+  }),
+});
+```
+
+`glob` loader 的 `id` 默认不含扩展名，路由直接 `params: { slug: post.id }`，无需 `replace`。渲染用 `const { Content } = await render(post)`。
+
+---
+
+## 开发
+
+```bash
+npm install
+npm run dev      # 本地开发
+npm run build    # 生产构建
+npm run preview  # 预览构建产物
+```
+
+### 依赖检查
+
+```bash
+npm ls @astrojs/markdown-remark   # 必须存在
+npm ls @tailwindcss/typography    # .prose 打底依赖
+```
+
+---
+
+## 改造对照：旧痛点 → 解决方案
+
+| 旧问题 | 现状 |
+|---|---|
+| 网格背景 + 漂浮代码符号干扰 | 已删除，纯色底 |
+| 卡片/区块全包围粗边框 | 全部移除，改 1px 分割线 + 间距 |
+| 暗色下代码块纯白 | Shiki 双主题 + `defaultColor: false` + CSS 变量切换 |
+| Copy 按钮随横向滚动错位 | rehype 包 `.code-block` wrapper，按钮绝对定位于 wrapper |
+| `.prose` 缺大量元素样式 | typography 插件打底 + 变量映射 + 极客风覆盖 |
+| 分页当前页大面积品牌色 | 改为 `text-brand-500` + 底部 16px 短线 |
+| 字体声明了但未加载 | fontsource variable 本地托管 |
+
+---
+
+## 注意事项
+
+1. **`@astrojs/markdown-remark` 必须显式声明**。Astro 7 已将其移出默认依赖，本地因残留旧版可能通过，CI 会失败。
+2. **`theme.css` 不 `@import "tailwindcss"`**。全局只允许 `global.css` 一处导入，避免变量重复注册。
+3. **`@import` 必须连续排在最前**，顺序：`tailwindcss` → `katex` → `fontsource` → `theme.css`。
+4. **fontsource variable 字体名带 `Variable` 后缀**，`--font-sans` / `--font-mono` 首项必须匹配。
+5. **`defaultColor: false` 后亮色也走 CSS 变量**，若删掉 Shiki 切换 CSS，亮暗都会变成无颜色。

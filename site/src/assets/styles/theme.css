@@ -1,15 +1,42 @@
-/* 只放主题定义，不包含任何 @apply 或工具类 */
-@import "tailwindcss";
+/* 只放主题定义与色板变量，不 import tailwind，不含 @apply */
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --color-brand-50: #e8fbfb;
+    --color-brand-50:  #e8fbfb;
+    --color-brand-100: #d0f7f7;
     --color-brand-400: #4dd9da;
     --color-brand-500: #1fcccd;
     --color-brand-600: #17a8a9;
     --color-brand-700: #128283;
 
-    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    /* fontsource variable 包的字体名带 "Variable" 后缀，必须写在最前 */
+    --font-sans: "Inter Variable", "Inter", system-ui, -apple-system,
+    "Segoe UI", "PingFang SC", "Microsoft YaHei",
+    "Noto Sans SC", sans-serif;
+
+    --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace,
+    "SF Mono", "Cascadia Code", "Fira Code", Consolas, monospace;
+}
+
+:root {
+    --bg:            #F8F9FA;
+    --surface:       #FFFFFF;
+    --fg:            #111827;
+    --fg-muted:      #6B7280;
+    --divider:       #E5E7EB;
+
+    --code-bg:       #F6F8FA;
+    --code-fg:       #24292F;
+}
+
+.dark {
+    --bg:            #0F1115;
+    --surface:       #161B22;
+    --fg:            #E6EDF3;
+    --fg-muted:      #8B949E;
+    --divider:       rgba(255, 255, 255, 0.08);
+
+    --code-bg:       #161B22;
+    --code-fg:       #C9D1D9;
 }

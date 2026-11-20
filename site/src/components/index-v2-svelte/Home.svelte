@@ -136,7 +136,7 @@
             <p class="entry__desc">{desc}</p>
           </div>
 
-          <span class="entry__arrow" aria-hidden="true">↗</span>
+          <span class="entry__arrow" aria-hidden="true">&#8599;</span>
         </a>
       {/each}
     </div>
@@ -221,7 +221,7 @@
     color: inherit;
     border: 1px solid var(--line);
     border-radius: 1.25rem;
-    background: rgba(237, 234, 227, 0.03);
+    background: rgba(26, 25, 23, 0.03);
     isolation: isolate;
     transition:
       transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -232,8 +232,8 @@
   .entry:hover {
     transform: translateY(-4px);
     border-color: var(--line-hover);
-    background: rgba(237, 234, 227, 0.055);
-    box-shadow: 0 20px 44px -28px rgba(237, 234, 227, 0.28);
+    background: rgba(26, 25, 23, 0.055);
+    box-shadow: 0 20px 44px -28px rgba(26, 25, 23, 0.28);
   }
   .entry:focus-visible {
     outline: 2px solid var(--ink);
@@ -254,7 +254,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 9999px;
-    background: rgba(237, 234, 227, 0.06);
+    background: rgba(26, 25, 23, 0.06);
     color: var(--ink);
     transition:
       background-color 0.35s ease,
@@ -301,11 +301,11 @@
     margin: 0.85rem 0 0;
     font-size: 0.875rem;
     line-height: 1.85;
-    color: rgba(237, 234, 227, 0.55);
+    color: rgba(26, 25, 23, 0.55);
     transition: color 0.3s ease;
   }
   .entry:hover .entry__desc {
-    color: rgba(237, 234, 227, 0.82);
+    color: rgba(26, 25, 23, 0.82);
   }
 
   .entry__arrow {
@@ -381,12 +381,12 @@
     margin: 0;
     font-size: 0.9375rem;
     line-height: 1.9;
-    color: rgba(237, 234, 227, 0.5);
+    color: rgba(26, 25, 23, 0.5);
     max-width: 56ch;
     transition: color 0.4s ease;
   }
   .quote:hover .quote__note {
-    color: rgba(237, 234, 227, 0.7);
+    color: rgba(26, 25, 23, 0.7);
   }
 
   /* ---------- 响应式：小屏单列 ---------- */

@@ -17,12 +17,12 @@ const nextUrl = totalPages > 1 ? '/blog/page/2' : null;
 ---
 
 <BaseLayout title="博客" description="所有博客文章列表">
-    <section class="relative max-w-5xl mx-auto px-4 py-14 sm:py-16">
-        <h1 class="text-4xl font-bold mb-3 flex items-center gap-3">
-            <span class="inline-block w-1.5 h-9 bg-brand-500"></span>
+    <section class="relative mx-auto max-w-5xl px-4 py-14 sm:py-16">
+        <h1 class="mb-3 flex items-center gap-3 text-3xl font-bold tracking-tight text-[var(--fg)] sm:text-4xl">
+            <span aria-hidden="true" class="inline-block h-6 w-[3px] rounded-full bg-brand-500 sm:h-8"></span>
             博客
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 mb-10">
+        <p class="mb-10 font-mono text-sm text-[var(--fg-muted)]">
             共 {allPosts.length} 篇文章
         </p>
 

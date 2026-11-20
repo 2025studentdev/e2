@@ -1,0 +1,183 @@
+<svg width="800" height="520" viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <!-- 蓝调时刻天空 -->
+        <linearGradient id="blueHourSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0B1330"/>
+            <stop offset="28%" stop-color="#16264E"/>
+            <stop offset="52%" stop-color="#2A4076"/>
+            <stop offset="74%" stop-color="#4D66A0"/>
+            <stop offset="90%" stop-color="#7C88B4"/>
+            <stop offset="100%" stop-color="#A88FA8"/>
+        </linearGradient>
+
+        <!-- 地平线余晖 -->
+        <radialGradient id="horizonGlow" cx="52%" cy="100%" r="62%">
+            <stop offset="0%" stop-color="#F2A98C" stop-opacity="0.75"/>
+            <stop offset="42%" stop-color="#D08298" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#7A6BA0" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- 雪地 -->
+        <linearGradient id="blueSnow" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#C0D2E8"/>
+            <stop offset="45%" stop-color="#95AECE"/>
+            <stop offset="100%" stop-color="#6C84A6"/>
+        </linearGradient>
+
+        <!-- 中景雪丘 -->
+        <linearGradient id="midSnow" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#A8BDD8"/>
+            <stop offset="100%" stop-color="#7E96B8"/>
+        </linearGradient>
+
+        <!-- 窗光晕 -->
+        <radialGradient id="lampGlow">
+            <stop offset="0%" stop-color="#FFC85E" stop-opacity="0.9"/>
+            <stop offset="45%" stop-color="#FFB347" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#FFA726" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- 积雪松树 -->
+        <g id="bluePine">
+            <rect x="-7" y="135" width="14" height="42" fill="#2E2419"/>
+            <polygon points="0,60 -64,140 64,140" fill="#14342A"/>
+            <polygon points="0,60 -34,105 34,105" fill="#C2D4EE"/>
+            <polygon points="0,25 -52,100 52,100" fill="#173B2F"/>
+            <polygon points="0,25 -28,68 28,68" fill="#C8D9F1"/>
+            <polygon points="0,-10 -40,62 40,62" fill="#1A4235"/>
+            <polygon points="0,-10 -22,30 22,30" fill="#D2E1F6"/>
+        </g>
+    </defs>
+
+    <!-- 天空 -->
+    <rect width="800" height="520" fill="url(#blueHourSky)"/>
+
+    <!-- 地平线余晖 -->
+    <rect x="0" y="150" width="800" height="210" fill="url(#horizonGlow)"/>
+
+    <!-- 星星 -->
+    <g fill="#DCE8FF">
+        <circle cx="52" cy="42" r="1.6" opacity="0.9"/>
+        <circle cx="118" cy="28" r="1.1" opacity="0.6"/>
+        <circle cx="196" cy="66" r="1.4" opacity="0.75"/>
+        <circle cx="268" cy="34" r="1.2" opacity="0.65"/>
+        <circle cx="322" cy="92" r="1.7" opacity="0.85"/>
+        <circle cx="392" cy="26" r="1.1" opacity="0.55"/>
+        <circle cx="448" cy="72" r="1.5" opacity="0.8"/>
+        <circle cx="512" cy="38" r="1.2" opacity="0.6"/>
+        <circle cx="566" cy="98" r="1.4" opacity="0.7"/>
+        <circle cx="632" cy="30" r="1.6" opacity="0.85"/>
+        <circle cx="688" cy="80" r="1.1" opacity="0.55"/>
+        <circle cx="742" cy="40" r="1.5" opacity="0.8"/>
+        <circle cx="784" cy="102" r="1.2" opacity="0.6"/>
+        <circle cx="360" cy="130" r="1.1" opacity="0.45"/>
+        <circle cx="700" cy="140" r="1.2" opacity="0.4"/>
+    </g>
+
+    <!-- 月牙 -->
+    <mask id="crescentMask">
+        <rect width="800" height="520" fill="#FFFFFF"/>
+        <circle cx="168" cy="74" r="21" fill="#000000"/>
+    </mask>
+    <circle cx="156" cy="84" r="23" fill="#F3EEDB" mask="url(#crescentMask)"/>
+
+    <!-- 远山 -->
+    <path d="M-60 350 L140 165 L340 350 Z" fill="#2A3C60"/>
+    <path d="M140 165 L182 218 L98 218 Z" fill="#BCCDE8"/>
+    <path d="M140 165 L182 218 L140 200 Z" fill="#96AACB"/>
+
+    <path d="M180 350 L400 120 L640 350 Z" fill="#233555"/>
+    <path d="M400 120 L456 194 L344 194 Z" fill="#C6D5EC"/>
+    <path d="M400 120 L456 194 L400 172 Z" fill="#9DB1D0"/>
+
+    <path d="M520 350 L690 175 L860 350 Z" fill="#2E4468"/>
+    <path d="M690 175 L730 222 L650 222 Z" fill="#BCCDE8"/>
+    <path d="M690 175 L730 222 L690 206 Z" fill="#96AACB"/>
+
+    <!-- 远景雪地 -->
+    <path d="M0 338 C150 318, 250 333, 400 325 C550 317, 650 333, 800 323 L800 520 L0 520 Z" fill="url(#blueSnow)"/>
+
+    <!-- 地平线余晖在雪面的反射 -->
+    <ellipse cx="420" cy="334" rx="260" ry="13" fill="#E8A08A" opacity="0.12"/>
+
+    <!-- 中景雪丘 -->
+    <path d="M0 408 Q200 380, 400 404 T800 394 L800 520 L0 520 Z" fill="url(#midSnow)"/>
+
+    <!-- 后排松树 -->
+    <use href="#bluePine" transform="translate(88,300) scale(0.55)"/>
+    <use href="#bluePine" transform="translate(250,320) scale(0.6)"/>
+    <use href="#bluePine" transform="translate(748,316) scale(0.65)"/>
+
+    <!-- 小屋地面阴影 -->
+    <ellipse cx="600" cy="438" rx="122" ry="16" fill="#5A7396" opacity="0.35"/>
+
+    <!-- 烟囱 -->
+    <rect x="648" y="285" width="20" height="62" fill="#443428"/>
+    <rect x="645" y="283" width="26" height="9" fill="#D6E4F6"/>
+
+    <!-- 炊烟 -->
+    <g fill="#C8D8F0">
+        <circle cx="657" cy="268" r="10" opacity="0.32"/>
+        <circle cx="668" cy="247" r="14" opacity="0.25"/>
+        <circle cx="684" cy="224" r="18" opacity="0.17"/>
+        <circle cx="704" cy="200" r="22" opacity="0.1"/>
+    </g>
+
+    <!-- 木屋主体 -->
+    <rect x="520" y="350" width="160" height="85" fill="#5A4232"/>
+    <g stroke="#463122" stroke-width="2" opacity="0.6">
+        <line x1="520" y1="372" x2="680" y2="372"/>
+        <line x1="520" y1="394" x2="680" y2="394"/>
+        <line x1="520" y1="416" x2="680" y2="416"/>
+    </g>
+
+    <!-- 屋顶积雪 -->
+    <polygon points="498,354 600,278 702,354" fill="#DCE8F8"/>
+    <polygon points="498,354 600,278 600,286 510,356" fill="#B8CCE6"/>
+    <polygon points="520,352 680,352 700,362 500,362" fill="#3D2E22"/>
+
+    <!-- 窗光晕 -->
+    <circle cx="563" cy="393" r="62" fill="url(#lampGlow)"/>
+
+    <!-- 窗户 -->
+    <rect x="545" y="375" width="36" height="36" fill="#FFC85E"/>
+    <g stroke="#3D2E22" stroke-width="3">
+        <line x1="563" y1="375" x2="563" y2="411"/>
+        <line x1="545" y1="393" x2="581" y2="393"/>
+    </g>
+    <rect x="545" y="375" width="36" height="36" fill="none" stroke="#3D2E22" stroke-width="3"/>
+
+    <!-- 门 -->
+    <rect x="622" y="385" width="40" height="50" rx="2" fill="#3D2A1C"/>
+    <circle cx="630" cy="412" r="2.5" fill="#C9A24A"/>
+
+    <!-- 窗光洒雪 -->
+    <ellipse cx="563" cy="440" rx="76" ry="17" fill="#FFC85E" opacity="0.18"/>
+    <ellipse cx="563" cy="444" rx="48" ry="10" fill="#FFD98A" opacity="0.14"/>
+
+    <!-- 前景松树 -->
+    <use href="#bluePine" transform="translate(190,318) scale(0.95)"/>
+    <use href="#bluePine" transform="translate(320,352) scale(0.65)"/>
+    <use href="#bluePine" transform="translate(732,330) scale(0.85)"/>
+
+    <!-- 雪地脚印 -->
+    <g fill="#7A90B4">
+        <ellipse cx="330" cy="482" rx="7" ry="3.5"/>
+        <ellipse cx="352" cy="474" rx="7" ry="3.5"/>
+        <ellipse cx="374" cy="466" rx="7" ry="3.5"/>
+        <ellipse cx="396" cy="459" rx="7" ry="3.5"/>
+        <ellipse cx="418" cy="452" rx="7" ry="3.5"/>
+        <ellipse cx="440" cy="447" rx="7" ry="3.5"/>
+        <ellipse cx="462" cy="442" rx="7" ry="3.5"/>
+        <ellipse cx="484" cy="438" rx="7" ry="3.5"/>
+    </g>
+
+    <!-- 雪粒反光 -->
+    <g fill="#DCE8FF" opacity="0.6">
+        <circle cx="150" cy="450" r="2"/>
+        <circle cx="420" cy="495" r="2.5"/>
+        <circle cx="660" cy="480" r="2"/>
+        <circle cx="250" cy="505" r="2.5"/>
+        <circle cx="560" cy="500" r="2"/>
+    </g>
+</svg>
