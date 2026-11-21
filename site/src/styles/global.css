@@ -1,21 +1,162 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 @plugin "@tailwindcss/typography";
 
-/* 行内代码：去掉 prose 默认加的两侧反引号 */
+@theme {
+    --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --color-page: #faf7f0;
+}
+
+html,
+body {
+    background-color: var(--color-page);
+}
+
+body {
+    font-family: var(--font-sans);
+}
+
+code,
+pre,
+kbd,
+samp {
+    font-family: var(--font-mono);
+}
+
+/* ---------- prose 重新设计（暖色浅色系） ---------- */
+.prose {
+    --tw-prose-body: #44403c;
+    --tw-prose-headings: #292524;
+    --tw-prose-lead: #57534e;
+    --tw-prose-links: #b45309;
+    --tw-prose-bold: #292524;
+    --tw-prose-counters: #78716c;
+    --tw-prose-bullets: #a8a29e;
+    --tw-prose-hr: #e7e1d5;
+    --tw-prose-quotes: #57534e;
+    --tw-prose-quote-borders: #d6cbb8;
+    --tw-prose-captions: #78716c;
+    --tw-prose-code: #9a3412;
+    --tw-prose-pre-code: #44403c;
+    --tw-prose-pre-bg: transparent;
+    --tw-prose-th-borders: #e0d8c8;
+    --tw-prose-td-borders: #ebe5d8;
+}
+
+.prose :where(h1, h2, h3, h4):not(:where([class~="not-prose"] *)) {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.prose :where(h2):not(:where([class~="not-prose"] *)) {
+    border-bottom: 1px solid #e7e1d5;
+    padding-bottom: 0.3em;
+}
+
+.prose :where(a):not(:where([class~="not-prose"] *)) {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+.prose :where(a:hover):not(:where([class~="not-prose"] *)) {
+    color: #92400e;
+}
+
+/* 行内代码：去掉 prose 默认的两侧反引号，加暖色底和细框 */
+.prose :where(code):not(:where([class~="not-prose"] *)) {
+    background: #efe9dd;
+    border: 1px solid #e0d8c8;
+    border-radius: 4px;
+    padding: 0.15em 0.35em;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
 .prose :where(code):not(:where([class~="not-prose"] *))::before,
 .prose :where(code):not(:where([class~="not-prose"] *))::after {
     content: none;
 }
 
-@media (prefers-color-scheme: dark) {
-    .astro-code,
-    .astro-code span {
-        color: var(--shiki-dark) !important;
-        background-color: var(--shiki-dark-bg) !important;
-    }
+/* 引用块 */
+.prose :where(blockquote):not(:where([class~="not-prose"] *)) {
+    background: #f3ede2;
+    border-left: 3px solid #d6cbb8;
+    border-radius: 0 6px 6px 0;
+    padding: 0.75rem 1rem;
+    font-style: normal;
 }
 
+.prose :where(blockquote p:first-of-type):not(:where([class~="not-prose"] *))::before,
+.prose :where(blockquote p:last-of-type):not(:where([class~="not-prose"] *))::after {
+    content: none;
+}
+
+/* 图片与图注 */
+.prose :where(img):not(:where([class~="not-prose"] *)) {
+    border-radius: 8px;
+    border: 1px solid #e5dfd2;
+}
+
+.prose :where(figcaption):not(:where([class~="not-prose"] *)) {
+    color: #78716c;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+/* ---------- 代码块：浅色底 + 外框 ---------- */
+.code-block {
+    margin: 1.5rem 0;
+    border: 1px solid #e5dfd2;
+    border-radius: 10px;
+    background: #f6f2ea;
+    overflow: hidden;
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    background: transparent !important;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.7;
+}
+
+/* shiki defaultColor: false 时，浅色 token 用 --shiki-light */
+.astro-code {
+    color: #44403c;
+}
+
+.astro-code span {
+    color: var(--shiki-light);
+}
+
+.astro-code,
+.astro-code span {
+    background-color: transparent !important;
+}
+
+/* ---------- 表格：圆角外框 + 暖色表头 ---------- */
+.table-wrap {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    border: 1px solid #e5dfd2;
+    border-radius: 8px;
+}
+
+.table-wrap table {
+    margin: 0;
+    width: 100%;
+}
+
+.prose :where(table):not(:where([class~="not-prose"] *)) th {
+    background: #f3ede2;
+}
+
+/* ---------- callout ---------- */
 .callout {
     border-left: 4px solid;
     padding: 0.75rem 1rem;

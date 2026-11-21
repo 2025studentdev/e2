@@ -4,16 +4,25 @@ import { getCollection } from 'astro:content';
 
 const docs = await getCollection('docs');
 
-// 按第一段路径分组
-const groups: Record<string, typeof docs> = {};
-for (const entry of docs) {
-    if (entry.id === 'index') continue;
+// 先按 order 升序，没写 order 的排最后，同 order 按 id 兜底
+const sortedDocs = docs
+    .filter((entry) => entry.id !== 'index')
+    .sort((a, b) => {
+        const ao = a.data.order ?? Number.POSITIVE_INFINITY;
+        const bo = b.data.order ?? Number.POSITIVE_INFINITY;
+        if (ao !== bo) return ao - bo;
+        return a.id.localeCompare(b.id);
+    });
+
+// 按第一段路径分组（组内顺序即 sortedDocs 的顺序）
+const groups: Record<string, typeof sortedDocs> = {};
+for (const entry of sortedDocs) {
     const [head, ...rest] = entry.id.split('/');
     const key = rest.length ? head : '其他';
     (groups[key] ||= []).push(entry);
 }
 
-// 把「其他」放到最后，其余分组保持原始顺序
+// 把「其他」放到最后，其余分组按首次出现顺序（即组内最小 order）排列
 const orderedGroups = Object.entries(groups).filter(([name]) => name !== '其他');
 if (groups['其他']) orderedGroups.push(['其他', groups['其他']]);
 
@@ -28,12 +37,12 @@ const { title } = Astro.props;
     <title>{title}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" />
 </head>
-<body class="min-h-screen bg-white text-slate-800 antialiased">
+<body class="min-h-screen text-stone-800 antialiased">
 
 <!-- 移动端顶栏 -->
-<header class="sticky top-0 z-30 flex items-center gap-3 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur md:hidden">
+<header class="sticky top-0 z-30 flex items-center gap-3 border-b border-stone-200 bg-[#faf7f0]/90 px-4 py-3 backdrop-blur md:hidden">
     <button id="menu-open" type="button" aria-label="打开菜单" aria-controls="sidebar" aria-expanded="false"
-            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100">
+            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-stone-700 hover:bg-[#efe9dd]">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
              fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
@@ -42,20 +51,20 @@ const { title } = Astro.props;
             <line x1="3" y1="18" x2="21" y2="18" />
         </svg>
     </button>
-    <a href="/docs" class="truncate font-semibold text-slate-900">{title}</a>
+    <a href="/docs" class="truncate font-semibold text-stone-900">{title}</a>
 </header>
 
 <!-- 遮罩 -->
-<div id="menu-overlay" class="fixed inset-0 z-40 hidden bg-slate-900/50 md:hidden" aria-hidden="true"></div>
+<div id="menu-overlay" class="fixed inset-0 z-40 hidden bg-stone-900/50 md:hidden" aria-hidden="true"></div>
 
 <div class="mx-auto max-w-6xl md:flex md:gap-10 md:px-6 md:py-10">
 
     <!-- 侧边栏：桌面常驻，移动端抽屉 -->
     <aside id="sidebar"
-           class="fixed inset-y-0 left-0 z-50 w-72 -translate-x-full overflow-y-auto border-r border-slate-200 bg-white p-4 transition-transform duration-200 ease-out md:static md:z-auto md:w-56 md:shrink-0 md:translate-x-0 md:overflow-visible md:border-r-0 md:bg-transparent md:p-0">
+           class="fixed inset-y-0 left-0 z-50 w-72 -translate-x-full overflow-y-auto border-r border-stone-200 bg-[#faf7f0] p-4 transition-transform duration-200 ease-out md:static md:z-auto md:w-56 md:shrink-0 md:translate-x-0 md:overflow-visible md:border-r-0 md:bg-transparent md:p-0">
 
         <div class="mb-6 flex items-center justify-between">
-            <a href="/docs" class="flex items-center gap-2 text-slate-900">
+            <a href="/docs" class="flex items-center gap-2 text-stone-900">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                      fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round">
@@ -65,7 +74,7 @@ const { title } = Astro.props;
                 <span class="font-semibold">My Docs</span>
             </a>
             <button id="menu-close" type="button" aria-label="关闭菜单"
-                    class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 md:hidden">
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-md text-stone-500 hover:bg-[#efe9dd] md:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                      fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round">
@@ -80,8 +89,8 @@ const { title } = Astro.props;
            class:list={[
                'mb-4 flex items-center gap-2 rounded-md px-3 py-2 text-sm transition',
                currentPath === '/docs'
-                   ? 'bg-slate-900 text-white'
-                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                   ? 'bg-stone-800 text-white'
+                   : 'text-stone-600 hover:bg-[#efe9dd] hover:text-stone-900',
            ]}>
             首页
         </a>
@@ -94,7 +103,7 @@ const { title } = Astro.props;
             return (
                     <details class="group mb-4" open={isGroupActive}>
                         <!-- 大标题（点击可展开/收起） -->
-                        <summary class="flex cursor-pointer select-none items-center justify-between rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-400 hover:text-slate-600 transition">
+                        <summary class="flex cursor-pointer select-none items-center justify-between rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-400 hover:text-stone-600 transition">
                             {name}
                             <!-- 添加一个小箭头图标，展开时旋转 -->
                             <svg class="h-4 w-4 transition-transform group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -112,8 +121,8 @@ const { title } = Astro.props;
                                            class:list={[
                                                'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition',
                                                active
-                                                   ? 'bg-slate-900 text-white'
-                                                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                                                   ? 'bg-stone-800 text-white'
+                                                   : 'text-stone-600 hover:bg-[#efe9dd] hover:text-stone-900',
                                            ]}>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                                  fill="none" stroke="currentColor" stroke-width="2"
@@ -133,7 +142,7 @@ const { title } = Astro.props;
 
     <!-- 正文 -->
     <main class="min-w-0 flex-1 px-4 py-6 md:px-0 md:py-0">
-        <article class="prose prose-slate max-w-none break-words prose-headings:scroll-mt-20">
+        <article class="prose max-w-none break-words prose-headings:scroll-mt-20">
             <slot />
         </article>
     </main>
